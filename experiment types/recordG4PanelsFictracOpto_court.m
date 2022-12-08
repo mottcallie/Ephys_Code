@@ -35,7 +35,7 @@ inputParams.dOutCh = {};
     inputParams.dInCh, inputParams.dOutCh);
 
 % generate output matrix for opto stimulation
-pulse = 1; %1 for brief pulse, 0 for entire trial
+pulse = 0; %1 for brief pulse, 0 for entire trial
 if pulse
     stimDur = 3; %sec.
     stimOutput = ones(stimDur*settings.bob.sampRate,1)*5; %generate stim array, 5V output

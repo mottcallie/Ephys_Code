@@ -19,7 +19,7 @@
 % Updated: 09/14/2022 - MC g4 panels now through DAC instead of log
 %
 
-function [rawData, inputParams, rawOutput] = recordG4PanelsFictracEphys_optomotor(settings,duration)
+function [rawData, inputParams, rawOutput] = recordG4PanelsFictracEphys_motor(settings,duration)
 
 %% INITIALIZE DAQ
 inputParams.exptCond = 'G4PanelsFictracEphys'; % name of trial type

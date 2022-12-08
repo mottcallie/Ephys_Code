@@ -345,6 +345,7 @@ elseif (strcmpi(newCell, 'n'))
         addTrial = input('\n[INPUT] Run another trial batch? (y/n): ','s');
         if strcmpi(addTrial, 'n')
             disp('Experiment ended by user.');
+            close all
             break;
         end
 

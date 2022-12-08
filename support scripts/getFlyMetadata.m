@@ -28,7 +28,7 @@
 function flyData = getFlyMetadata(dateDir, flyDir)
     flyData.dateDir = dateDir;
     flyData.flyDir = flyDir;
-    listDir = 'C:\Users\wilson\Dropbox (HMS)\MATLAB\G4_EphysCode\support scripts\';
+    listDir = 'C:\Users\wilson\Dropbox (HMS)\MATLAB\Ephys_Code\support scripts\';
     
     % load exhisting fly genotypes
     load([listDir 'myFlyList.mat'])

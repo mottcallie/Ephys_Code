@@ -38,7 +38,7 @@ function preExptData = preExptRoutine(settings)
     preExptPath = pwd;
     
     % set sample durations
-    duration = 10;
+    duration = 20;
     
     %% Ask about pipette internal
     intSln = input('\nWhich internal? ', 's');
