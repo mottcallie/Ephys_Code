@@ -1,6 +1,6 @@
-% recordG4PanelsFictracEphysOpto_func.m
+% stimG4PanelsFictrac_court.m
 %
-% Trial Type Function
+% Trial Type Function for stimulating
 % Display pattern/function on G4 panels
 % Record G4 panels and FicTrac channels
 % Deliver 3 second light pulse at the start of each trial
@@ -19,10 +19,10 @@
 % Adapted: 10/06/2022 - MC
 %
 
-function [rawData, inputParams, rawOutput] = recordG4PanelsFictracOpto_court(settings,duration)
+function [rawData, inputParams, rawOutput] = stimG4PanelsFictrac_court(settings,duration)
 
 %% INITIALIZE DAQ
-inputParams.exptCond = 'G4PanelsFictracOpto'; % name of trial type
+inputParams.exptCond = 'StimG4PanelsFictrac'; % name of trial type
 
 % which input and output data streams used in this experiment
 inputParams.aInCh = {'ficTracHeading', 'ficTracIntX', 'ficTracIntY', 'g4panelXPosition'};

@@ -85,7 +85,7 @@ ln = length(exptData.t);
         exptData.iInj = daqOutput.ampExtCmdIn/settings.VOut.IConvFactor;
     end
     % check if opto stimulation data was collected, if so, process
-    if contains(inputParams.exptCond,'opto','IgnoreCase',true)
+    if contains(inputParams.exptCond,'stim','IgnoreCase',true)
         exptData.optoStim = daqOutput.optoExtCmd;
     end
 
