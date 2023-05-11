@@ -1,8 +1,9 @@
-% recordG4PanelsFictracEphys_func.m
+% stimG4PanelsFictracEphys_pulse.m
 %
-% Trial Type Function
+% Trial Type Function for stimulating
 % Display pattern/function on G4 panels
 % Record G4 panels, FicTrac channels, and ephys channels
+% Deliver alternating light pulses throughout trial
 %
 % INPUTS:
 %   settings - struct of ephys setup settings, from ephysSettings()
@@ -15,41 +16,47 @@
 %   rawOutput - raw output sent by DAQ, matrix where each column is
 %       different channel
 %
-% Created: 11/01/2021 - MC
-% Updated: 09/14/2022 - MC g4 panels now through DAC instead of log
+% Adapted: 01/30/2023 - MC
 %
 
-function [rawData, inputParams, rawOutput] = recordG4PanelsFictracEphys_motor(settings,duration)
+function [rawData, inputParams, rawOutput] = stimG4PanelsFictracEphys_pulse(settings,duration)
 
 %% INITIALIZE DAQ
-inputParams.exptCond = 'G4PanelsFictracEphys'; % name of trial type
+inputParams.exptCond = 'StimG4PanelsFictracEphys'; % name of trial type
 
 % which input and output data streams used in this experiment
 inputParams.aInCh = {'ampI', 'amp10Vm', 'ampScaledOut', ...
     'ampMode', 'ampGain', 'ampFreq', ...
-    'ficTracHeading', 'ficTracIntX', 'ficTracIntY', 'g4panelXPosition'};
-inputParams.aOutCh = {};
+    'ficTracHeading', 'ficTracIntX', 'ficTracIntY', ...
+    'g4panelXPosition'};
+inputParams.aOutCh = {'optoExtCmd'};
 inputParams.dInCh = {};
 inputParams.dOutCh = {};
-
-% output matrix - empty for this trial type (there are no output)
-rawOutput = [];
 
 % initialize DAQ, including channels
 [userDAQ, ~, ~, ~, ~] = initUserDAQ(settings, inputParams.aInCh, inputParams.aOutCh,...
     inputParams.dInCh, inputParams.dOutCh);
+
+% generate output matrix for opto stimulation
+pulseDur = 15; %pulse duration, sec.
+stimOutput = ones(pulseDur*settings.bob.sampRate,1)*5; %generate stim array, 5V output
+restOutput = zeros(pulseDur*settings.bob.sampRate,1); %generate rest array, 0V output
+nPulse = ceil(duration/(pulseDur*2)); %number of pulses given duration
+rawOutput_pre = repmat([restOutput ; stimOutput],nPulse,1); %combine and repeat
+
+% cut off according to trial duration (e.g., leaves slack if desired)
+rawOutput = rawOutput_pre(1:duration*settings.bob.sampRate);
+
+% queue opto stimulation output
+userDAQ.queueOutputData(rawOutput);
 
 
 %% SET PANEL PARAMETERS
 
 disp('Initializing G4 panels...');
 % panel settings
-pattN = 5; %8px square grating
-%pattN = 6; %12px square grating
-%funcN = 27; %25deg/sec alternating optomotor
-%funcN = 28; %50deg/sec alternating optomotor
-funcN = 29; %75deg/sec alternating optomotor
-
+pattN = 1; %background
+funcN = 1; %hold
 mode = 1; %pos change func
 
 % pull settings and connect
@@ -80,7 +87,6 @@ Panel_com('set_pattern_func_id', funcN);
 %% ACQUIRE
 disp(['[' datestr(now,'HH:MM') '] Beginning: ' patlookup.name ' w/ ' funlookup.name])
 inputParams.trialDuration = expt_t;
-userDAQ.DurationInSeconds = expt_t;
 
 % start experiment
 pause(0.1) %slight delay
@@ -88,6 +94,7 @@ inputParams.startTimeStamp = datestr(now, 'HH:MM:SS');
 Panel_com('start_display', expt_t); %sec
 rawData = userDAQ.startForeground(); % acquire data (in foreground)
 % stop experiment
+userDAQ.outputSingleScan(0);
 pause(0.1)
 
 disp('Finished trial.');

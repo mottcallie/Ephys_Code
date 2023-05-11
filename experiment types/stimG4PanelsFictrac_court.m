@@ -37,7 +37,7 @@ inputParams.dOutCh = {};
 % generate output matrix for opto stimulation
 pulse = 0; %1 for brief pulse, 0 for entire trial
 if pulse
-    stimDur = 3; %sec.
+    stimDur = 5; %sec.
     stimOutput = ones(stimDur*settings.bob.sampRate,1)*5; %generate stim array, 5V output
     restOutput = zeros((duration-stimDur)*settings.bob.sampRate,1); %generate remaining rest array
     rawOutput = [stimOutput ; restOutput]; %combine
@@ -53,13 +53,10 @@ userDAQ.queueOutputData(rawOutput);
 
 disp('Initializing G4 panels...');
 % panel settings
-pattN = 2; %6px dark bar only
-%pattN = 4; %16px dark box only
+pattN = 2; %06px dark bar
 
-%funcN = 30; %50d/sec sweeps for bar
-%funcN = 31; %50d/sec sweeps for bo
-funcN = 32; %75d/sec sweeps for bar
-%funcN = 33; %75d/sec sweeps for box
+funcN = 7; %75d arc at 55d/sec
+%funcN = 8; %75d arc at 75d/sec
 
 mode = 1; %pos change func
 

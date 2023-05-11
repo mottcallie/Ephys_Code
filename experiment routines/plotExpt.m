@@ -13,29 +13,21 @@
 %
 % Original: 04/05/2021 - MC
 %           11/04/2021 - MC removed g3 and added g4
+%           02/06/2023 - MC small modifications to display and output plots
 
 function [] = plotExpt(exptData,exptMeta)
     
     % reset counters
-    s = 0;
     n = 0;
     
-
     % set number of sublots based on number of expt variables
-    if contains(exptMeta.exptCond,'ephys','IgnoreCase',true)
-        s=s+1; %for plotting scaled output
-    end
-    if contains(exptMeta.exptCond,'inj','IgnoreCase',true)
-        s=s+1; %for plotting current injection
-    end
-    if contains(exptMeta.exptCond,'g4','IgnoreCase',true)
-        if std(exptData.g4displayXPos) %and only if not stationary
-            s=s+1; %for plotting panels
-        end
-    end
-    if contains(exptMeta.exptCond,'fictrac','IgnoreCase',true)
-        s=s+3; %for plotting directional velocity
-    end
+    checkEphys = contains(exptMeta.exptCond,'ephys','IgnoreCase',true);
+    checkIInj = contains(exptMeta.exptCond,'inj','IgnoreCase',true);
+    checkG4 = contains(exptMeta.exptCond,'g4','IgnoreCase',true);
+    checkFicTrac = contains(exptMeta.exptCond,'fictrac','IgnoreCase',true);
+    checkOpto = contains(exptMeta.exptCond,'stim','IgnoreCase',true); %not separate
+
+    s = checkEphys + checkIInj + checkG4 + (checkFicTrac*3);
     
     % set plot height based on number of expt variables
     if s>2
@@ -48,10 +40,74 @@ function [] = plotExpt(exptData,exptMeta)
     figure(1); clf;
     set(gcf,'Position',[100 100 1500 plotHeight])
     lw = 1;
+
+    
+    %% plot panel display
+    if checkG4
+        if std(exptData.g4displayXPos) %and only if not stationary
+            n = n+1; % update counter
+            
+            % pull xpos data for pre-plot processing
+            g4Pos_mod = exptData.g4displayXPos;
+            
+            % if function used center and remove noise
+            if isfield(exptMeta,'func')
+                % set midpoint (in front of fly) based on object size
+                midPos = (88 - (exptMeta.objSize/2 - 1))/192 *360; %center position, in degrees
+                % zero data across midpoing, with right + and left -
+                g4Pos_mod = g4Pos_mod - midPos;
+
+                % some experiments use a "hidden" position for when the target
+                % is behind the fly in the empty column, and therefore not visible
+                if contains(exptMeta.func,'motionpulse')
+                    hiddenPos = (184 - (exptMeta.objSize/2))/192 * 360; %hidden position, in degrees
+                    g4Pos_mod(exptData.g4displayXPos>hiddenPos) = nan;
+                end
+
+                % hide noise caused by data acquisition or motion across sides
+                g4Pos_mod(abs(diff(g4Pos_mod))>2) = nan;
+                g4Pos_mod(isoutlier(g4Pos_mod)) = nan;
+
+                % else no function used, center but do not remove noise
+            else
+                g4Pos_mod = g4Pos_mod - 180;
+            end
+
+
+            % plot
+            posLim = nanmax(abs(g4Pos_mod));
+            ex(n) = subplot(s,1,n);
+            p = plot(exptData.t, g4Pos_mod, 'Color','#77AC30','LineWidth',lw);
+            %p.YData(abs(diff(p.YData))>180) = nan;
+            y(n) = ylabel('Object (deg)');
+            
+            axis tight
+            if posLim < 10
+                ylim([-10 10])
+            else
+                ylim([-posLim posLim])
+            end
+            xlim([0 max(exptData.t)])
+            yline(0,':','Color','k') %line at mideline
+            
+        end
+    end
     
     
+    %% plot current pulse
+    if checkIInj
+        n = n+1; % update counter
+        
+        ex(n) = subplot(s,1,n);
+        plot(exptData.t, exptData.iInj, 'k')
+        y(n) = ylabel('I-Inj (pA)');
+        axis tight
+
+    end
+
+
     %% plot ephys
-    if contains(exptMeta.exptCond,'ephys','IgnoreCase',true)
+    if checkEphys
         n = n+1; % advance counter
         
         switch exptMeta.mode
@@ -73,40 +129,8 @@ function [] = plotExpt(exptData,exptMeta)
     end
 
     
-    %% plot output variable
-    if contains(exptMeta.exptCond,'inj','IgnoreCase',true)
-        n = n+1; % update counter
-        
-        ex(n) = subplot(s,1,n);
-        plot(exptData.t, exptData.iInj, 'k')
-        y(n) = ylabel('I-Inj (pA)');
-        axis tight
-
-    end
-    
-    %% plot panel display
-    if contains(exptMeta.exptCond,'g4','IgnoreCase',true)
-        if std(exptData.g4displayXPos) %and only if not stationary
-            n = n+1; % update counter
-            
-            minPos = nanmin(exptData.g4displayXPos);
-            maxPos = nanmax(exptData.g4displayXPos);
-            midPos = minPos + (maxPos-minPos)/2; %midline
-            
-            ex(n) = subplot(s,1,n);
-            p = plot(exptData.t, exptData.g4displayXPos, 'Color','#77AC30','LineWidth',lw);
-            p.YData(abs(diff(p.YData))>180) = nan;
-            y(n) = ylabel('Object (deg)');
-            axis tight
-            
-            yline(midPos,':','Color','k') %line at mideline
-            
-        end
-    end
-    
-    
     %% plot directional velocities (3)
-    if contains(exptMeta.exptCond,'fictrac','IgnoreCase',true)
+    if checkFicTrac
         n = n+1; % update counter
         
         ex(n) = subplot(s,1,n);
@@ -150,24 +174,30 @@ function [] = plotExpt(exptData,exptMeta)
         
     end
     
+
     %% add opto stim line if needed
-    if contains(exptMeta.exptCond,'opto','IgnoreCase',true)
-        optoend = find(ischange(exptData.optoStim));
-        oc = "#A2142F"; %set color
-        if ~isempty(optoend)
+    if checkOpto
+        % find both stim onsets and offsets based on output changes
+        optoBuffer = [0; exptData.optoStim; 0]; %add buffer to catch stims at start/stop of trial
+        optoOn = find(diff(optoBuffer)>0);
+        optoOff = find(diff(optoBuffer)<0)-1;
+        
+        if ~isempty(optoOn)
             for ol=1:s
                 subplot(s,1,ol)
-                xline(exptData.t(1),'Color',oc,'LineWidth',lw)
-                xline(exptData.t(optoend),'Color',oc,'LineWidth',lw)
+                hold on
+                xline(exptData.t(optoOn),'Color',"#77AC30",'LineWidth',4)
+                xline(exptData.t(optoOff),'Color',"#A2142F",'LineWidth',4)
             end
         end
     end
+
+
     %% add label
     % add at label at the end, regardless of the number of subplots
     xlabel('Time (s)')
     linkaxes(ex,'x');
-    for yn = 1:n
-        y(yn).Position(1) = -15;
-    end
+
+    
 end
 

@@ -42,11 +42,12 @@ rawOutput = [];
 
 disp('Initializing G4 panels...');
 % panel settings
-pattN = 5; %8px square grating
-%pattN = 6; %12px square grating
-%funcN = 27; %25deg/sec alternating optomotor
-%funcN = 28; %50deg/sec alternating optomotor
-funcN = 29; %75deg/sec alternating optomotor
+pattN = 14; %08px square grating
+%pattN = 15; %12px square grating
+
+%funcN = 102; %35deg/sec alternating optomotor
+%funcN = 103; %55deg/sec alternating optomotor
+funcN = 104; %75deg/sec alternating optomotor
 
 mode = 1; %pos change func
 

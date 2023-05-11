@@ -1,13 +1,13 @@
 function  plotPatchCheck(checkInputR,checkVm,checkSR)
 % pull trial N
-trials = 1:length(checkInputR);
+trials = 1:size(checkInputR,2);
 
 % plot input resistance and baseline membrane potential
 figure(2); clf;
 set(gcf,'Position',[100 100 700 400]);
 
 s(1) = subplot(3,1,1);
-scatter(trials,checkInputR,'filled','MarkerFaceColor','#0072BD')
+scatter(trials,abs(checkInputR),'filled','MarkerFaceColor','#0072BD')
 ylabel('IR (MOhm)')
 
 s(2) = subplot(3,1,2);

@@ -1,14 +1,12 @@
-% batteryG4PanelsFictracEphys_court.m
+% recordG4PanelsFictracEphys_optomotor.m
 %
-% Trial Type Function for battery
-% Display selected pattern/function on G4 panels
+% Trial Type Function
+% Display pattern/function on G4 panels
 % Record G4 panels, FicTrac channels, and ephys channels
 %
 % INPUTS:
 %   settings - struct of ephys setup settings, from ephysSettings()
 %   duration - min
-%   pattN - select pattern
-%   funcN - select function
 %
 % OUTPUTS:
 %   rawData - raw data measured by DAQ, matrix where each column is data
@@ -18,10 +16,10 @@
 %       different channel
 %
 % Created: 11/01/2021 - MC
-% Updated: 01/02/2023 - MC converted to battery function
+% Updated: 09/14/2022 - MC g4 panels now through DAC instead of log
 %
 
-function [rawData, inputParams, rawOutput] = batteryG4PanelsFictracEphys_court(settings,duration,pattN,funcN)
+function [rawData, inputParams, rawOutput] = recordG4PanelsFictracEphys_optomotor(settings,duration)
 
 %% INITIALIZE DAQ
 inputParams.exptCond = 'G4PanelsFictracEphys'; % name of trial type
@@ -46,6 +44,13 @@ rawOutput = [];
 
 disp('Initializing G4 panels...');
 % panel settings
+pattN = 14; %08px square grating
+%pattN = 15; %12px square grating
+
+%funcN = 102; %35deg/sec alternating optomotor
+%funcN = 103; %55deg/sec alternating optomotor
+funcN = 104; %75deg/sec alternating optomotor
+
 mode = 1; %pos change func
 
 % pull settings and connect

@@ -23,6 +23,7 @@
 %           11/15/2021 - MC rotated t, resampled fictrac to match DAQ
 %           01/04/2022 - MC fixed resampling error w/fictrac data
 %           09/14/2022 - MC g4 data now run through DAC rather than log
+%           04/28/2023 - MC exptMeta now stores object size
 %
 
 function [exptData, exptMeta] = processExptData(daqData, daqOutput, daqTime, inputParams, settings)
@@ -96,6 +97,20 @@ ln = length(exptData.t);
 
         % convert from 0-10V AO0 output to 0-360degree mapping
         exptData.g4displayXPos = (daqData.g4panelXPosition./10) *360;
+        
+        % if function name provided, store it
+        if isfield(inputParams,'function_name')
+            exptMeta.func = inputParams.function_name;
+        end
+
+        % if object size provided, store it
+        if isfield(inputParams,'objectSize')
+            obj = inputParams.objectSize;
+            if ~isnumeric(obj)
+                obj = str2num(obj);
+            end
+            exptMeta.objSize = obj;
+        end
 
     end
     

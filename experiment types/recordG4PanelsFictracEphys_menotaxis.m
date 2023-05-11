@@ -44,7 +44,7 @@ rawOutput = [];
 
 disp('Initializing G4 panels...');
 % panel settings
-pattN = 3; %6px bright bar only
+pattN = 6; %06px bright bar
 
 %mode = 4; %closed loop - frame rate
 mode = 7; %closed loop - frame index

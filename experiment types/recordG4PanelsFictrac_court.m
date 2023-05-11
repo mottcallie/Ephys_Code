@@ -42,13 +42,10 @@ rawOutput = [];
 
 disp('Initializing G4 panels...');
 % panel settings
-pattN = 2; %6px dark bar only
-%pattN = 4; %16px dark box only
+pattN = 2; %06px dark bar
 
-funcN = 13; %50d/sec sweeps for bar
-%funcN = 14; %50d/sec sweeps for box
-%funcN = 15; %75d/sec sweeps for bar
-%funcN = 16; %75d/sec sweeps for box
+funcN = 7; %75d arc at 55d/sec
+%funcN = 8; %75d arc at 75d/sec
 
 mode = 1; %pos change func
 
