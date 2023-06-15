@@ -1,4 +1,4 @@
-% convolveSpikeRate2.m
+% convolveSpikeRate_input.m
 %
 % Analysis function
 % Detects spikes and then applies a convolution kernel to calculate the
@@ -7,17 +7,18 @@
 % INPUTS:
 %   settings - struct of ephys setup settings, from ephysSettings()
 %   exptData - processed experiment data
+%   ksize - typically 4000 but can adjust for lower/higher res
+%   ktype - gaussian or causal
 %
 % OUTPUTS:
 %   pk_v - voltage of spike peaks
 %   pk_r - raster of spikes
-%   ksize - size of kernel (msec.)
 %   spikeRate - convolved spike rate
 %
-% CREATED:  12/14/2021 MC
+% CREATED:  05/17/2023 MC created from main convolve function
 %
 
-function  [pk_v,pk_r,spikeRate] = convolveSpikeRate2(settings,exptData,ksize,ktype)
+function  [pk_v,pk_r,spikeRate] = convolveSpikeRate_input(settings,exptData,ksize,ktype)
 
 %% pull trace and time
 
@@ -88,7 +89,7 @@ switch ktype
     case 'gaussian'
         
         % create kernel
-        sigma = 4*ksize; %increase to increase smoothing
+        sigma = ksize; %increase to increase smoothing
         tc = -(sigma*10):(sigma*10);
         kernel = gaussmf(tc,[sigma 0]);
         %plot(kernel) %preview kernel
@@ -100,8 +101,8 @@ end
 
 
 
-% plot
-if 1
+%% plot
+if 0
     figure(10); clf;
     set(gcf,'Position',[100 100 1200 500])
     sr(1) = subplot(3,1,1:2);

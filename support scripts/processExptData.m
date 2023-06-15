@@ -211,24 +211,6 @@ ln = length(exptData.t);
 
         exptData.YPosition = positionUnit_rs(1:ln,3); %y position in mm
         exptData.sidewaysVelocity = velocity_rs(1:ln,3); %sideways velocity in mm/s
-        
-        %optional plot for checking analysis
-        if 0
-            for idx = 2
-            figure
-            
-            subplot(9,1,1),plot(positionVoltage(:,idx)),title('voltage'), xlim([0 length(positionVoltage)])
-            subplot(9,1,2),plot(positionRad(:,idx)),title('radians'), xlim([0 length(positionRad)])
-            subplot(9,1,3),plot(positionRad_uw(:,idx)),title('radians unwrapped'), xlim([0 length(positionRad_uw)])
-            subplot(9,1,4),plot(positionRad_uw_ds_sm(:,idx)),title('radians downsampled/smoothed'), xlim([0 length(positionRad_uw_ds_sm)])
-            subplot(9,1,5),plot(positionUnit(:,idx)),title('units of interest'), xlim([0 length(positionUnit)])
-            subplot(9,1,6),plot(velocity(:,idx)),title('velocity'), xlim([0 length(velocity)])
-            subplot(9,1,7),plot(velocity_interpolated(:,idx)),title('velocity int'), xlim([0 length(velocity_interpolated)])
-            subplot(9,1,8),plot(velocity_sm(:,idx)),title('velocity sm'), xlim([0 length(velocity_sm)])
-            subplot(9,1,9),plot(velocity_rs(:,idx)),title('velocity resampled'), xlim([0 length(velocity_rs)])
-            
-            end
-        end
        
     end
 

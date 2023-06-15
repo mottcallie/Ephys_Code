@@ -87,7 +87,8 @@ switch ktype
     case 'gaussian'
         
         % create kernel
-        sigma = 4000; %increase to increase smoothing
+        sigma = 2000;
+        %sigma = 4000; %increase to increase smoothing
         tc = -(sigma*10):(sigma*10);
         kernel = gaussmf(tc,[sigma 0]);
         %plot(kernel) %preview kernel
@@ -100,7 +101,7 @@ end
 
 
 %% plot
-if 0
+if 1
     figure(10); clf;
     set(gcf,'Position',[100 100 1200 500])
     sr(1) = subplot(3,1,1:2);

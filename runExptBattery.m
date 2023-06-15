@@ -292,7 +292,7 @@ elseif (strcmpi(newCell, 'n'))
             pattSelect = ones(1,10)*2; %dark bar
             funcSelect = (108:117);
             stimSelect = ones(1,10); %stim for all trials
-            trialDuration = 97; %sec, time of trial
+            trialDuration = 60; %sec, time of trial
             trialBreak = 20; %sec, break between trials
     end
 
