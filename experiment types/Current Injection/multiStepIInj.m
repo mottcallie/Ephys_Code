@@ -25,7 +25,7 @@
 function [iInjOut, iInjParams] = multiStepIInj(settings, duration)
 
     % option 1 - set parameters
-    iInjParams.stepAmp = 50;  % step amplitude (pA)
+    iInjParams.stepAmp = 100;  % step amplitude (pA)
     iInjParams.stepDur = 0.5;   % step duration (s)
     iInjParams.spaceAmp = 0;   % amplitude b/n steps (pA)
     iInjParams.spaceDur = 9.5;  % duration b/n steps (s)

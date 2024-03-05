@@ -133,7 +133,7 @@ if (~strcmpi(newCell, 'n'))
     % Asks whether to include acclimatization block, then runs until user declines
     acclimateDur = input('[INPUT] Add acclimatization period? (min): ');
     acclimateN = 1; %counter
-    acclimateFTMode = 2; %open(0) or closed(2) loop
+    acclimateFTMode = 2; % (0) OL with background, (1) CL with dark bar, (3) CL with bright bar
     while 1
         if ~isempty(acclimateDur) && acclimateDur>0
             % connect display during first run
@@ -242,58 +242,72 @@ elseif (strcmpi(newCell, 'n'))
 
     % select which battery to be run ahead of time
     fprintf(['\nBATTERY OPTIONS\n',...
-        '(1) Vary sweep speed w/ dark bar\n',...
-        '(2) Vary arc length w/ dark bar\n',...
-        '(3) Vary sweep speed SLOW w/ dark bar\n',...
-        '(4) Vary object size w/ dark bar\n',...
-        '(5) Background only, alternating stimulation\n',...
-        '(6) Coherent path\n' ...
-        '(7) Motion pulse varying speed w/ dark bar\n']);
+        '(1) Vary sweep speed w/ dark bar \n',...
+        '(2) Background only, alternating current and opto stimulation \n',...
+        '(3) Motion pulse varying speed \n'...
+        '(4) Motion pulse varying speed w/o stim \n' ...
+        '(5) Stationary pulse \n'...
+        '(6) Stationary pulse w/o stim \n'...
+        '(7) Background only on/off \n'...
+        '(8) Menotaxis\n' ...
+        '(9) Background only, alternating opto stimulation\n']);
     batterySelect = input('[INPUT] Select experimental battery: ');
     % then pull matching patterns and functions
     switch batterySelect
-        case 1
+        case 1 %speed battery
             pattSelect = [2 2 2 2 2 2]; %same bar
             funcSelect = [6 5 105 6 7 8]; %same arc, VARY SPEED
             stimSelect = [0 1 1 1 1 1]; %1 break trial, stim rest
             trialDuration = 60; %sec, time of trial
             trialBreak = 10; %sec, break between trial
-        case 2
-            pattSelect = [02 02 02 02]; %same bar
-            funcSelect = [07 07 55 79]; %same arc, VARY ARC LENGTH
-            stimSelect = [00 01 01 01]; %1 break trial, 1 stim for each
+        case 2 %background
+            pattSelect = [01 01 01 01]; %background
+            funcSelect = [01 01 01 01]; %hold
+            stimSelect = [00 00 01 01; 00 01 00 01]; %1 break trial, 1 stim trial
             trialDuration = 60; %sec, time of trial
             trialBreak = 0; %sec, break between trial
-        case 3
-            pattSelect = [2 2 2 2 2 2 2 2]; %same bar
-            funcSelect = [103 101 102 103 104 105 106 107]; %same arc, VARY SPEED
-            stimSelect = [0 1 1 1 1 1 1 1]; %1 break trial, stim rest
+        case 3 % motion pulse w/stim
+            pattSelect = ones(1,10)*2; %dark bar
+            funcSelect = (108:117);
+            stimSelect = ones(1,10); %stim for all trials
             trialDuration = 60; %sec, time of trial
-            trialBreak = 10; %sec, break between trial
-        case 4
-            pattSelect = [02 02 03 04 05]; %same bar
-            funcSelect = [07 07 13 19 25]; %same arc, VARY ARC LENGTH
-            stimSelect = [00 01 01 01 01]; %1 break trial, 1 stim for each
+            trialBreak = 5; %sec, break between trials
+        case 4 % motion pulse w/o stim
+            pattSelect = ones(1,10)*2; %dark bar
+            funcSelect = (108:117);
+            stimSelect = zeros(1,10); %stim for all trials
             trialDuration = 60; %sec, time of trial
-            trialBreak = 0; %sec, break between trial
-        case 5
+            trialBreak = 5; %sec, break between trials
+        case 5 % stationary pulse w/stim
+            pattSelect = ones(1,10)*2; %dark bar
+            funcSelect = (118:127);
+            stimSelect = ones(1,10); %stim for all trials
+            trialDuration = 38; %sec, time of trial
+            trialBreak = 3; %sec, break between trials
+        case 6 % stationary pulse w/o stim
+            pattSelect = ones(1,10)*2; %dark bar
+            funcSelect = (118:127);
+            stimSelect = zeros(1,10); %stim for all trials
+            trialDuration = 38; %sec, time of trial
+            trialBreak = 3; %sec, break between trials
+        case 7 %alternating background on/off
+            pattSelect = 017; %background on/off
+            funcSelect = 128; %alternate on/off
+            stimSelect = 00; %no stim
+            trialDuration = 10*60; %sec, time of trial
+            trialBreak = 0; %sec, break between trials
+        case 8 %menotaxis
+            pattSelect = 06; %bright bar
+            funcSelect = 00; %none
+            stimSelect = 00; %no stim
+            trialDuration = 12.5*60; %sec, time of trial
+            trialBreak = 0; %sec, break between trials
+        case 9 %background
             pattSelect = [01 01]; %background
             funcSelect = [01 01]; %hold
             stimSelect = [00 01]; %1 break trial, 1 stim trial
             trialDuration = 60; %sec, time of trial
             trialBreak = 0; %sec, break between trial
-        case 6
-            pattSelect = ones(1,25)*2;
-            funcSelect = [118:142];
-            stimSelect = ones(1,25);
-            trialDuration = 60; %sec, time of trial
-            trialBreak = 10;
-        case 7
-            pattSelect = ones(1,10)*2; %dark bar
-            funcSelect = (108:117);
-            stimSelect = ones(1,10); %stim for all trials
-            trialDuration = 60; %sec, time of trial
-            trialBreak = 20; %sec, break between trials
     end
 
     %% check relevant external dependencies
@@ -304,6 +318,8 @@ elseif (strcmpi(newCell, 'n'))
         %determine if open or closed loop experiment
         if contains(exptTypeName,'cl','IgnoreCase',true)
             ftMode = 2; %set closed-loop
+        elseif contains(exptTypeName,'jumps','IgnoreCase',true)
+            ftMode = 3; %set closed-loop WITH bar jumps
         else %default
             ftMode = 0; %set open-loop
         end
@@ -332,7 +348,9 @@ elseif (strcmpi(newCell, 'n'))
 
     % if opto stim, reminder user to check ND filters
     if inUseStim
-        ndCheck = input('[INPUT] Check ND filters in place...');
+        if sum(stimSelect) > 0
+            ndCheck = input('[INPUT] Check ND filters in place...');
+        end
     end
 
 
@@ -374,7 +392,7 @@ elseif (strcmpi(newCell, 'n'))
             for rp = randperm(length(pattSelect))
                 pattN = pattSelect(rp); %pull this pattern
                 funcN = funcSelect(rp); %pull this function
-                stim = stimSelect(rp); %pull this stim
+                stim = stimSelect(:,rp); %pull this stim
                 varN = alpha(rp); %pull this variant letter
                 disp(['Starting trial ' num2str(trialNum,'%02.f') ' subset ' num2str(subt) '/' num2str(batteryN) ' ' varN '...'])
                 [rawData, inputParams, rawOutput] = exptFn(settings,trialDuration,pattN,funcN,stim);

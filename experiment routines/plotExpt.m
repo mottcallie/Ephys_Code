@@ -26,6 +26,7 @@ function [] = plotExpt(exptData,exptMeta)
     checkG4 = contains(exptMeta.exptCond,'g4','IgnoreCase',true);
     checkFicTrac = contains(exptMeta.exptCond,'fictrac','IgnoreCase',true);
     checkOpto = contains(exptMeta.exptCond,'stim','IgnoreCase',true); %not separate
+    checkPython = contains(exptMeta.exptCond,'jump','IgnoreCase',true); %not separate
 
     s = checkEphys + checkIInj + checkG4 + (checkFicTrac*3);
     
@@ -59,7 +60,7 @@ function [] = plotExpt(exptData,exptMeta)
 
                 % some experiments use a "hidden" position for when the target
                 % is behind the fly in the empty column, and therefore not visible
-                if contains(exptMeta.func,'motionpulse')
+                if contains(exptMeta.func,'pulse')
                     hiddenPos = (184 - (exptMeta.objSize/2))/192 * 360; %hidden position, in degrees
                     g4Pos_mod(exptData.g4displayXPos>hiddenPos) = nan;
                 end
@@ -189,6 +190,19 @@ function [] = plotExpt(exptData,exptMeta)
                 xline(exptData.t(optoOn),'Color',"#77AC30",'LineWidth',4)
                 xline(exptData.t(optoOff),'Color',"#A2142F",'LineWidth',4)
             end
+        end
+    end
+
+
+    %% add python trigger if needed
+    if checkPython
+        % find when panel xposition was jumped via python socket client
+        jump_idx = find(diff(exptData.pythonJumpTrig)>0)+1;
+
+        for ol=1
+            subplot(s,1,ol)
+            hold on
+            xline(exptData.t(jump_idx),'Color',"#A2142F",'LineWidth',1)
         end
     end
 

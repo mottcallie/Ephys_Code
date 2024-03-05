@@ -29,10 +29,10 @@ sr = settings.bob.sampRate;
 % pull voltage or current trace
 if isfield(exptData,'scaledVoltage') %iclamp
     % set findpeak variables
-    minProm = 4;
-    maxWidth = 1e-2 * sr;
+    minProm = 5;
+    maxWidth = 0.75e-2 * sr;
     minDistance = 1.5e-3 * sr;
-    minWidth = 0.3e-3 * sr;
+    minWidth = 0.5e-3 * sr;
     
     ylbl = 'voltage (mV)';
     spikeTrace = exptData.scaledVoltage;

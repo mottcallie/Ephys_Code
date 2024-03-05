@@ -22,7 +22,7 @@
 % Adapted: 02/16/2023 - MC
 %
 
-function [rawData, inputParams, rawOutput] = batteryStimG4PanelsFictracEphys_IInj(settings,duration,pattN,funcN,optostim)
+function [rawData, inputParams, rawOutput] = batteryStimG4PanelsFictracEphys_IHold(settings,duration,pattN,funcN,stimSelect)
 
 %% INITIALIZE DAQ
 inputParams.exptCond = 'StimG4PanelsFictracEphysIInj'; % name of trial type
@@ -40,17 +40,22 @@ inputParams.dOutCh = {};
     inputParams.dInCh, inputParams.dOutCh);
 
 % first, generate output for iinj (output 1)
-% get multi-step output vector
-[iInjOutput, iInjParams] = alterStepIInj(settings, duration);
+% depending on input
+if stimSelect(2)
+    holdAmp = -200;
+else
+    holdAmp = 0;
+end
+[iInjOutput, iInjParams] = holdIInj(settings, holdAmp, duration);
 duration_adj = length(iInjOutput)/settings.bob.sampRate; %adjust duration to matrch output
 
 % save meta data
-inputParams.iInjProtocol = 'alternatingStepIInj';
+inputParams.iInjProtocol = 'holdIInj';
 inputParams.iInjParams = iInjParams; % current injection parameters
 
 % second, generate output for opto (output 2)
 % depending on input
-if optostim
+if stimSelect(1)
     optoOutput = ones(duration_adj*settings.bob.sampRate,1)*5; %generate stim array, 5V output
 else
     optoOutput = zeros(duration_adj*settings.bob.sampRate,1); %generate empty stim array, 0V output

@@ -45,175 +45,187 @@ ln = length(exptData.t);
 
 
 %% ephys data
-    % check if ephys data was collected, if so, process
-    if contains(inputParams.exptCond,'ephys','IgnoreCase',true)
-        
-        % decode telegraphed output
-        exptMeta.gain = decodeTelegraphedOutput(daqData.ampGain, 'gain');
-        exptMeta.freq = decodeTelegraphedOutput(daqData.ampFreq, 'freq');
-        exptMeta.mode = decodeTelegraphedOutput(daqData.ampMode, 'mode');
+% check if ephys data was collected, if so, process
+if contains(inputParams.exptCond,'ephys','IgnoreCase',true)
 
-        % process non-scaled output
-        % voltage in mV
-        exptData.voltage = settings.Vm.softGain .* daqData.amp10Vm;
-        % current in pA
-        exptData.current = settings.I.softGain .* daqData.ampI;
+    % decode telegraphed output
+    exptMeta.gain = decodeTelegraphedOutput(daqData.ampGain, 'gain');
+    exptMeta.freq = decodeTelegraphedOutput(daqData.ampFreq, 'freq');
+    exptMeta.mode = decodeTelegraphedOutput(daqData.ampMode, 'mode');
 
-        % process scaled output
-        switch exptMeta.mode
-            case {'Track','V-Clamp'} % voltage clamp, scaled out is current
-                % I = alpha * beta mV/pA (1000 is to convert from V to mV)
-                exptMeta.softGain = 1000 / ...
-                    (exptMeta.gain * settings.amp.beta);
-                % scaled out is current, in pA
-                exptData.scaledCurrent = exptMeta.softGain .* ...
-                    daqData.ampScaledOut;
-                % current clamp, scaled out is voltage
-            case {'I=0','I-Clamp','I-Clamp Fast'}
-                % V = alpha mV / mV (1000 for V to mV)
-                exptMeta.softGain = 1000 / exptMeta.gain;
-                % scaled out is voltage, in mV
-                exptData.scaledVoltage = exptMeta.softGain .* ...
-                    daqData.ampScaledOut;
-        end
+    % process non-scaled output
+    % voltage in mV
+    exptData.voltage = settings.Vm.softGain .* daqData.amp10Vm;
+    % current in pA
+    exptData.current = settings.I.softGain .* daqData.ampI;
+
+    % process scaled output
+    switch exptMeta.mode
+        case {'Track','V-Clamp'} % voltage clamp, scaled out is current
+            % I = alpha * beta mV/pA (1000 is to convert from V to mV)
+            exptMeta.softGain = 1000 / ...
+                (exptMeta.gain * settings.amp.beta);
+            % scaled out is current, in pA
+            exptData.scaledCurrent = exptMeta.softGain .* ...
+                daqData.ampScaledOut;
+            % current clamp, scaled out is voltage
+        case {'I=0','I-Clamp','I-Clamp Fast'}
+            % V = alpha mV / mV (1000 for V to mV)
+            exptMeta.softGain = 1000 / exptMeta.gain;
+            % scaled out is voltage, in mV
+            exptData.scaledVoltage = exptMeta.softGain .* ...
+                daqData.ampScaledOut;
     end
-    
+end
+
 %% output data
-    % check if output (current inj) data was collected, if so, process
-    if contains(inputParams.exptCond,'inj','IgnoreCase',true)
-        
-        % convert from DAQ output back to target current
-        exptData.iInj = daqOutput.ampExtCmdIn/settings.VOut.IConvFactor;
-    end
-    % check if opto stimulation data was collected, if so, process
-    if contains(inputParams.exptCond,'stim','IgnoreCase',true)
-        exptData.optoStim = daqOutput.optoExtCmd;
-    end
+% check if output (current inj) data was collected, if so, process
+if contains(inputParams.exptCond,'inj','IgnoreCase',true)
+
+    % convert from DAQ output back to target current
+    exptData.iInj = daqOutput.ampExtCmdIn/settings.VOut.IConvFactor;
+end
+% check if opto stimulation data was collected, if so, process
+if contains(inputParams.exptCond,'stim','IgnoreCase',true)
+    exptData.optoStim = daqOutput.optoExtCmd;
+end
 
 
 %% g4 panel data
-    % check if panels were used, if so, process
-    if contains(inputParams.exptCond,'g4','IgnoreCase',true)
+% check if panels were used, if so, process
+if contains(inputParams.exptCond,'g4','IgnoreCase',true)
 
-        % convert from 0-10V AO0 output to 0-360degree mapping
-        exptData.g4displayXPos = (daqData.g4panelXPosition./10) *360;
-        
-        % if function name provided, store it
-        if isfield(inputParams,'function_name')
-            exptMeta.func = inputParams.function_name;
-        end
+    % convert from 0-10V AO0 output to 0-360degree mapping
+    exptData.g4displayXPos = (daqData.g4panelXPosition./10) *360;
 
-        % if object size provided, store it
-        if isfield(inputParams,'objectSize')
-            obj = inputParams.objectSize;
-            if ~isnumeric(obj)
-                obj = str2num(obj);
-            end
-            exptMeta.objSize = obj;
-        end
-
+    % if function name provided, store it
+    if isfield(inputParams,'function_name')
+        exptMeta.func = inputParams.function_name;
     end
-    
+
+    % if object size provided, store it
+    if isfield(inputParams,'objectSize')
+        obj = inputParams.objectSize;
+        if ~isnumeric(obj)
+            obj = str2num(obj);
+        end
+        exptMeta.objSize = obj;
+    end
+
+end
+
+%% python jump data
+% check if a python script was used to jump the bar position
+if contains(inputParams.exptCond,'jumps','IgnoreCase',true)
+    % clean up and store
+    exptData.pythonJumpTrig = round(daqData.pythonJumpTrig);
+end
+
 %% behavior data
-    % check if behavior data was collected, if so, process
-    if contains(inputParams.exptCond,'fictrac','IgnoreCase',true)
-        
-        %note:
-        %X is forward
-        %Y is side-to-side (roll)
-        %heading is angular (yaw)
-        
-        fictrac_rate = 50; %set fictrac acquisition rate
-        ballRadius = 9/2; %set ball radius in mm
+% check if behavior data was collected, if so, process
+if contains(inputParams.exptCond,'fictrac','IgnoreCase',true)
 
-        % pull preprocessed fictrac data in order to processes together
-        positionVoltage = [daqData.ficTracHeading, daqData.ficTracIntX,...
-            daqData.ficTracIntY];
+    %note:
+    %X is forward
+    %Y is side-to-side (roll)
+    %heading is angular (yaw)
 
-        % 1)Tranform signal from voltage to radians for unwrapping
-        positionRad = positionVoltage*(2*pi)./10;
+    fictrac_rate = 50; %set fictrac acquisition rate
+    ballRadius = 9/2; %set ball radius in mm
 
-        % 2)Unwrap
-        positionRad_uw = unwrap(positionRad);
+    % pull preprocessed fictrac data in order to processes together
+    positionVoltage = [daqData.ficTracHeading, daqData.ficTracIntX,...
+        daqData.ficTracIntY];
 
-        % 3)Downsample the position data to match FicTrac's output
-        positionRad_uw_ds = resample(positionRad_uw,(fictrac_rate/2),settings.bob.sampRate);
+    % 1)Tranform signal from voltage to radians for unwrapping
+    positionRad = positionVoltage*(2*pi)./10;
 
-        % 4)Smooth the data
-        positionRad_uw_ds_sm = smoothdata(positionRad_uw_ds,'rlowess',25);
+    % 2)Unwrap
+    positionRad_uw = unwrap(positionRad);
 
-        % 5)Transform to useful systems
-        positionUnit(:,1) = rad2deg(positionRad_uw_ds_sm(:,1)); %degrees for yaw (0-360)
-        positionUnit(:,2:3) = positionRad_uw_ds_sm(:,2:3) .* ballRadius; %mm for x/y (0-2pi*r)
+    % 3)Downsample the position data to match FicTrac's output
+    positionRad_uw_ds = resample(positionRad_uw,(fictrac_rate/2),settings.bob.sampRate);
 
-        % 6)Take the derivative (must be done one at a time)
-        velocity(:,1) = gradient(positionUnit(:,1)).*(fictrac_rate/2);
-        velocity(:,2) = gradient(positionUnit(:,2)).*(fictrac_rate/2);
-        velocity(:,3) = gradient(positionUnit(:,3)).*(fictrac_rate/2);
+    % 4)Smooth the data
+    positionRad_uw_ds_sm = smoothdata(positionRad_uw_ds,'rlowess',25);
 
-        % 7)OPTIONAL: Remove extreme values (must be done one at a time)
-        if 0
-            velocity_interpolated = zeros(length(velocity),3);
-            for v=1:3
-                
-                % pull velocity signal one at a time
-                vel_ex = velocity(:,v);
-                
-                % 7)Calculate the distribution and take away values that are below 2.5% and above 97.5%
-                percentilelow = prctile(vel_ex,2.5);
-                percentilehigh = prctile(vel_ex,97.5);
-                boundedVelocity = vel_ex;
-                boundedVelocity(vel_ex<percentilelow | vel_ex>percentilehigh) = NaN;
-                
-                % 8)Linearly interpolate to replace the NaNs with values.
-                [pointsVectorV] = find(~isnan(boundedVelocity));
-                valuesVectorV = boundedVelocity(pointsVectorV);
-                xiV = 1:length(boundedVelocity);
-                
-                % load into table
-                velocity_interpolated(:,v) = interp1(pointsVectorV,valuesVectorV,xiV);
-            end
-        else
-            velocity_interpolated = velocity;
+    % 5)Transform to useful systems
+    positionUnit(:,1) = rad2deg(positionRad_uw_ds_sm(:,1)); %degrees for yaw (0-360)
+    positionUnit(:,2:3) = positionRad_uw_ds_sm(:,2:3) .* ballRadius; %mm for x/y (0-2pi*r)
+
+    % 6)Take the derivative (must be done one at a time)
+    velocity(:,1) = gradient(positionUnit(:,1)).*(fictrac_rate/2);
+    velocity(:,2) = gradient(positionUnit(:,2)).*(fictrac_rate/2);
+    velocity(:,3) = gradient(positionUnit(:,3)).*(fictrac_rate/2);
+
+    % 7)OPTIONAL: Remove extreme values (must be done one at a time)
+    if 0
+        velocity_interpolated = zeros(length(velocity),3);
+        for v=1:3
+
+            % pull velocity signal one at a time
+            vel_ex = velocity(:,v);
+
+            % 7)Calculate the distribution and take away values that are below 2.5% and above 97.5%
+            percentilelow = prctile(vel_ex,2.5);
+            percentilehigh = prctile(vel_ex,97.5);
+            boundedVelocity = vel_ex;
+            boundedVelocity(vel_ex<percentilelow | vel_ex>percentilehigh) = NaN;
+
+            % 8)Linearly interpolate to replace the NaNs with values.
+            [pointsVectorV] = find(~isnan(boundedVelocity));
+            valuesVectorV = boundedVelocity(pointsVectorV);
+            xiV = 1:length(boundedVelocity);
+
+            % load into table
+            velocity_interpolated(:,v) = interp1(pointsVectorV,valuesVectorV,xiV);
         end
-
-        % 8)OPTIONAL: Smooth
-        if 1
-            velocity_sm = smoothdata(velocity_interpolated,'rlowess',15);
-        else
-            velocity_sm = velocity_interpolated
-        end
-        
-        % 9)Resample to match DAQ
-        % add capps to avoid end resampling error
-        cap = 10;
-        velocity_sm_cap = [repmat(velocity_sm(1,:),cap,1); velocity_sm; repmat(velocity_sm(end,:),cap,1)];
-        position_sm_cap = [repmat(positionUnit(1,:),cap,1); positionUnit; repmat(positionUnit(end,:),cap,1)];
-        % resample
-        velocity_rs_cap = resample(velocity_sm_cap,settings.bob.sampRate,(50/2),3,10);
-        positionUnit_rs_cap = resample(position_sm_cap,settings.bob.sampRate,(50/2),3,10);
-        % remove caps
-        rsFactor = cap * settings.bob.sampRate/(50/2);
-        velocity_rs = velocity_rs_cap;
-        velocity_rs(1:rsFactor,:) = [];
-        velocity_rs(end-rsFactor+1:end,:) = [];
-        positionUnit_rs = positionUnit_rs_cap;
-        positionUnit_rs(1:rsFactor,:) = [];
-        positionUnit_rs(end-rsFactor+1:end,:) = [];
-
-
-        %Assign output structure
-        exptData.headingPosition = positionUnit_rs(1:ln,1); %heading position in degrees
-        exptData.angularVelocity = velocity_rs(1:ln,1); %angular velcoity in degrees/s
-
-        exptData.XPosition = positionUnit_rs(1:ln,2); %x position in mm
-        exptData.forwardVelocity = velocity_rs(1:ln,2); %forward velocity in mm/s
-
-        exptData.YPosition = positionUnit_rs(1:ln,3); %y position in mm
-        exptData.sidewaysVelocity = velocity_rs(1:ln,3); %sideways velocity in mm/s
-       
+    else
+        velocity_interpolated = velocity;
     end
 
-    
+    % 8)OPTIONAL: Smooth
+    if 1
+        velocity_sm = smoothdata(velocity_interpolated,'rlowess',15);
+    else
+        velocity_sm = velocity_interpolated
+    end
 
+    % 9)Resample to match DAQ
+    % add capps to avoid end resampling error
+    cap = 10;
+    velocity_sm_cap = [repmat(velocity_sm(1,:),cap,1); velocity_sm; repmat(velocity_sm(end,:),cap,1)];
+    position_sm_cap = [repmat(positionUnit(1,:),cap,1); positionUnit; repmat(positionUnit(end,:),cap,1)];
+    % resample
+    velocity_rs_cap = resample(velocity_sm_cap,settings.bob.sampRate,(50/2),3,10);
+    positionUnit_rs_cap = resample(position_sm_cap,settings.bob.sampRate,(50/2),3,10);
+    % remove caps
+    rsFactor = cap * settings.bob.sampRate/(50/2);
+    velocity_rs = velocity_rs_cap;
+    velocity_rs(1:rsFactor,:) = [];
+    velocity_rs(end-rsFactor+1:end,:) = [];
+    positionUnit_rs = positionUnit_rs_cap;
+    positionUnit_rs(1:rsFactor,:) = [];
+    positionUnit_rs(end-rsFactor+1:end,:) = [];
+
+
+    %Assign output structure
+    exptData.headingPosition = positionUnit_rs(1:ln,1); %heading position in degrees
+    exptData.angularVelocity = velocity_rs(1:ln,1); %angular velcoity in degrees/s
+
+    exptData.XPosition = positionUnit_rs(1:ln,2); %x position in mm
+    exptData.forwardVelocity = velocity_rs(1:ln,2); %forward velocity in mm/s
+
+    exptData.YPosition = positionUnit_rs(1:ln,3); %y position in mm
+    exptData.sidewaysVelocity = velocity_rs(1:ln,3); %sideways velocity in mm/s
+
+end
+
+
+%% leg data
+% check if leg video was collected, if so, process
+if contains(inputParams.exptCond,'legvid','IgnoreCase',true)
+    exptData.legCamFramesIn = daqData.legCamFrames;
+    exptData.legCamFrameStartTrig = daqOutput.legCamFrameStartTrig;
+end
 end

@@ -49,7 +49,7 @@ function [dataDir, exptFnDir, settings] = ephysSettings()
 
     %% Break out box, channel assignments
     % which analog input channels are used
-    settings.bob.aInChUsed  = [0:11];
+    settings.bob.aInChUsed  = [0:12];
     
     % which digital input channels are used (matrix each row is channel, column
     %  1 is port number, column 2 is line number)
@@ -58,7 +58,7 @@ function [dataDir, exptFnDir, settings] = ephysSettings()
     % which analog output channels are used
     settings.bob.aOutChUsed = [0 1];
     % which digital output channels are used (notation as above)
-    settings.bob.dOutChUsed = 0;
+    settings.bob.dOutChUsed = [0 4];
     
     %% Break out box, channel decode
     % to decode which column in raw data output from data acquisition
@@ -67,13 +67,14 @@ function [dataDir, exptFnDir, settings] = ephysSettings()
     settings.bob.aInChAssign = {'ampI', 'amp10Vm', ...
         'ampScaledOut', 'ampMode', 'ampGain', 'ampFreq', ...
         'g3panelXPosition', 'g3panelYPosition', ...
-        'ficTracHeading', 'ficTracIntX', 'ficTracIntY', 'g4panelXPosition'};
-    settings.bob.dInChAssign = {'ficTracCamFrames'};
+        'ficTracHeading', 'ficTracIntX', 'ficTracIntY',...
+        'g4panelXPosition','pythonJumpTrig'};
+    settings.bob.dInChAssign = {'legCamFrames'};
     settings.bob.inChAssign = [settings.bob.aInChAssign ...
         settings.bob.dInChAssign];
     % output channel assignments (notation like input, above)
     settings.bob.aOutChAssign = {'ampExtCmdIn','optoExtCmd'};
-    settings.bob.dOutChAssign = {};
+    settings.bob.dOutChAssign = {'legCamFrameStartTrig'};
     settings.bob.outChAssign = [settings.bob.aOutChAssign ...
         settings.bob.dOutChAssign];
 

@@ -68,9 +68,35 @@ switch loop
         Panel_com('set_pattern_id', pattN);
         Panel_com('set_pattern_func_id', funcN);
 
-    case 2
+    case 1
         % panel settings
         pattN = 2; %6px dark bar only
+
+        %mode = 4; %closed loop - frame rate
+        mode = 7; %closed loop - frame index
+
+        panel_gain = 80;
+
+        % pull settings and connect
+        userSettings %load settings
+        Panel_com('change_root_directory', exp_path);
+        load([exp_path '\currentExp'])
+        expt_t = duration;
+
+        %store pattern parameters
+        load(['patt_lookup_' sprintf('%04d', pattN)])
+        inputParams.pattern_name = patlookup.name;
+        inputParams.objectSize = patlookup.size;
+        inputParams.objectGS = patlookup.objgs;
+        inputParams.backgroundGS = patlookup.bckgs;
+
+        % load panel parameters
+        Panel_com('set_control_mode', mode);
+        Panel_com('set_gain_bias', [panel_gain 0]);
+        Panel_com('set_pattern_id', pattN);
+    case 2
+        % panel settings
+        pattN = 6; %6px bright bar only
 
         %mode = 4; %closed loop - frame rate
         mode = 7; %closed loop - frame index
