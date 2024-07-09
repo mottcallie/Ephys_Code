@@ -16,7 +16,7 @@ function [] = plotFigure(filename)
 % pull current folder
 currentFolder = cd;
 % set save folder
-dropboxFolder = "C:\Users\wilson\Dropbox (HMS)\Manuscript\raw traces";
+dropboxFolder = "C:\Users\wilson\Dropbox (HMS)\Manuscript";
 
 % set liquid junction potential subtraction for voltage traces
 % source: Gouwens, N. W. & Wilson, R.I. Signal propagation in Drosophila central neurons. J.Neurosci. 29, 6239-6249

@@ -96,7 +96,8 @@ switch loop
         Panel_com('set_pattern_id', pattN);
     case 2
         % panel settings
-        pattN = 6; %6px bright bar only
+        pattN = 2; %6px dark bar only
+        %pattN = 6; %6px bright bar only
 
         %mode = 4; %closed loop - frame rate
         mode = 7; %closed loop - frame index

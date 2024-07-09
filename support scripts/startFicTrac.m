@@ -9,6 +9,7 @@
 %           1 set to closed-loop via frame rate
 %           2 set to closed-loop via frame index
 %           3 set to clsoed-loop via frame index WITH bar jumps
+%           4 set to closed-loop via frame index WITH noise
 %           5 set to leg camera
 %
 % Created: 11/05/2021 MC
@@ -63,6 +64,9 @@ switch ftMode
     case 3
         disp('MODE SELECTION: closed-loop - frame index(7) WITH bar jumps');
         thisSocketClient = 'socket_client_360_cl_mode7_jumps'; %select closed-loop, frame index
+    case 4
+        disp('MODE SELECTION: closed-loop - frame index(7) WITH noise');
+        thisSocketClient = 'socket_client_360_cl_mode7_noise'; %select closed-loop, frame index
     case 5
         thisSocketClient = [];
 end

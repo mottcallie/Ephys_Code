@@ -14,6 +14,8 @@
 %   spikeRate - convolved spike rate
 %
 % CREATED:  12/14/2021 MC
+% UPDATED:  05/29/2024 MC normalized area to 1
+%           06/03/2024 MC fixed causal kernel
 %
 
 function  [pk_v,pk_r,spikeRate] = convolveSpikeRate(settings,exptData,ktype)
@@ -28,7 +30,7 @@ sr = settings.bob.sampRate;
 if isfield(exptData,'scaledVoltage') %iclamp
     % set findpeak variables
     minProm = 5;
-    maxWidth = 0.75e-2 * sr;
+    maxWidth = 0.5e-1 * sr;
     minDistance = 1.5e-3 * sr;
     minWidth = 0.5e-3 * sr;
     
@@ -68,21 +70,15 @@ pk_r(pk_i) = 1;
 switch ktype
     case 'causal'
         % create kernel
-        tau = 60000; %increase to increase smoothing
-        tc = 0:(tau*10);
-        kernel = 0.5 * exp(-tc./tau);
-%         plot(t(tc+1),kernel) %preview kernel
-%         trapz(t(tc+1),kernel)
+        tau = ksize*2.5; %increase to increase smoothing
+        tc = -(tau*10):(tau*10);
+        tc_k = 0:(tau*10); %partial
+        kernel = exp(-tc_k./tau);
+        kernel = [zeros(1,tau*10) kernel]; %center to full time array
+        kernel_norm = kernel./(trapz(tc,kernel)./sr);
         
         % convolve spikerate
-        spikeRate = zeros(1,length(spikeTrace)); %initialize
-        for p = 1:length(pk_i)
-            pk_idx = pk_i(p) + tc;
-            if max(pk_idx) > length(spikeRate) %if kernel runs over
-                pk_idx = pk_idx(pk_idx<=length(spikeRate));
-            end
-            spikeRate(1,pk_idx) = spikeRate(1,pk_idx) + kernel(1:length(pk_idx));
-        end
+        spikeRate = conv(pk_r,kernel_norm,'same');
         
     case 'gaussian'
         
@@ -91,14 +87,14 @@ switch ktype
         %sigma = 4000; %increase to increase smoothing
         tc = -(sigma*10):(sigma*10);
         kernel = gaussmf(tc,[sigma 0]);
-        %plot(kernel) %preview kernel
-        trapz(tc,kernel)./sr;
-        
-        spikeRate = conv(pk_r,kernel,'same');
+        kernel_norm = kernel./(trapz(tc,kernel)./sr);
+
+        spikeRate = conv(pk_r,kernel_norm,'same');
 
 end
 
-
+% preview if desired
+%plot(tc,kernel);hold on; plot(tc,kernel_norm);xline(0)
 
 %% plot
 if 1

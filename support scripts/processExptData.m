@@ -1,9 +1,10 @@
 % processExptData.m
 %
 % Function to take output from preprocessUserDaq.m and extract
-%  appropriately scaled and named data ephys(voltage, current,
-%  scaled out, gain, mode, freq) and g4 display panels (x position)
-%  and fictrac (x position, y position, heading)
+% appropriately scaled and named data ephys(voltage, current,
+% scaled out, gain, mode, freq) and g4 display panels (x position)
+% and fictrac (x position, y position, heading) and output data (opto or
+% current stim)
 %
 % INPUTS:
 %   daqData - data collected on DAQ, with fields labeled
@@ -158,41 +159,11 @@ if contains(inputParams.exptCond,'fictrac','IgnoreCase',true)
     velocity(:,2) = gradient(positionUnit(:,2)).*(fictrac_rate/2);
     velocity(:,3) = gradient(positionUnit(:,3)).*(fictrac_rate/2);
 
-    % 7)OPTIONAL: Remove extreme values (must be done one at a time)
-    if 0
-        velocity_interpolated = zeros(length(velocity),3);
-        for v=1:3
+    % 7)OPTIONAL: Smooth again
+    velocity_sm = smoothdata(velocity,'rlowess',15);
 
-            % pull velocity signal one at a time
-            vel_ex = velocity(:,v);
-
-            % 7)Calculate the distribution and take away values that are below 2.5% and above 97.5%
-            percentilelow = prctile(vel_ex,2.5);
-            percentilehigh = prctile(vel_ex,97.5);
-            boundedVelocity = vel_ex;
-            boundedVelocity(vel_ex<percentilelow | vel_ex>percentilehigh) = NaN;
-
-            % 8)Linearly interpolate to replace the NaNs with values.
-            [pointsVectorV] = find(~isnan(boundedVelocity));
-            valuesVectorV = boundedVelocity(pointsVectorV);
-            xiV = 1:length(boundedVelocity);
-
-            % load into table
-            velocity_interpolated(:,v) = interp1(pointsVectorV,valuesVectorV,xiV);
-        end
-    else
-        velocity_interpolated = velocity;
-    end
-
-    % 8)OPTIONAL: Smooth
-    if 1
-        velocity_sm = smoothdata(velocity_interpolated,'rlowess',15);
-    else
-        velocity_sm = velocity_interpolated
-    end
-
-    % 9)Resample to match DAQ
-    % add capps to avoid end resampling error
+    % 8)Resample to match DAQ
+    % add caps to avoid end resampling error
     cap = 10;
     velocity_sm_cap = [repmat(velocity_sm(1,:),cap,1); velocity_sm; repmat(velocity_sm(end,:),cap,1)];
     position_sm_cap = [repmat(positionUnit(1,:),cap,1); positionUnit; repmat(positionUnit(end,:),cap,1)];
