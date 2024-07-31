@@ -37,8 +37,8 @@ function [dataDir, exptFnDir, settings] = ephysSettings()
 
     % Devices
     settings.devVendor = 'ni';
-    settings.bob.devID = 'Dev2';
-    settings.temp.devID = 'Dev2';
+    settings.bob.devID = 'Dev1';
+    settings.temp.devID = 'Dev1';
 
     % Sampling Rate
     settings.bob.sampRate  = 20e3; % 20 kHz, same as Yvette

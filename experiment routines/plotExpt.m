@@ -135,7 +135,7 @@ function [] = plotExpt(exptData,exptMeta)
         n = n+1; % update counter
         
         ex(n) = subplot(s,1,n);
-        plot(exptData.t, exptData.angularVelocity, 'Color','#0072BD','LineWidth',lw)
+        plot(exptData.tDS, exptData.angularVelocity, 'Color','#0072BD','LineWidth',lw)
         y(n) = ylabel('Angular (deg/s)');
         yline(0,':','Color','k')
         axis tight
@@ -149,7 +149,7 @@ function [] = plotExpt(exptData,exptMeta)
         n = n+1; % update counter
         
         ex(n) = subplot(s,1,n);
-        plot(exptData.t, exptData.sidewaysVelocity, 'Color','#7E2F8E','LineWidth',lw)
+        plot(exptData.tDS, exptData.sidewaysVelocity, 'Color','#7E2F8E','LineWidth',lw)
         y(n) = ylabel('Sideways (mm/s)');
         yline(0,':','Color','k')
         axis tight
@@ -163,7 +163,7 @@ function [] = plotExpt(exptData,exptMeta)
         n = n+1; % update counter
         
         ex(n) = subplot(s,1,n);
-        plot(exptData.t, exptData.forwardVelocity, 'Color','#D95319','LineWidth',lw)
+        plot(exptData.tDS, exptData.forwardVelocity, 'Color','#D95319','LineWidth',lw)
         yline(0,':','Color','k')
         y(n) = ylabel('Forward (mm/s)');
         axis tight

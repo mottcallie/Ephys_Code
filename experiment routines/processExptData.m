@@ -25,6 +25,7 @@
 %           01/04/2022 - MC fixed resampling error w/fictrac data
 %           09/14/2022 - MC g4 data now run through DAC rather than log
 %           04/28/2023 - MC exptMeta now stores object size
+%           07/31/2024 - MC fictrac now based on Helen's, added firing rate
 %
 
 function [exptData, exptMeta] = processExptData(daqData, daqOutput, daqTime, inputParams, settings)
@@ -42,8 +43,6 @@ end
 
 % time points of recording
 exptData.t = daqTime';
-ln = length(exptData.t);
-
 
 %% ephys data
 % check if ephys data was collected, if so, process
@@ -77,6 +76,11 @@ if contains(inputParams.exptCond,'ephys','IgnoreCase',true)
             exptData.scaledVoltage = exptMeta.softGain .* ...
                 daqData.ampScaledOut;
     end
+
+    % convolve firing rate
+    [~,spikeRaster,spikeRate] = convolveSpikeRate(settings,exptData,'gaussian');
+    exptData.spikeRaster = spikeRaster;
+    exptData.spikeRate = spikeRate;
 end
 
 %% output data
@@ -125,78 +129,38 @@ end
 %% behavior data
 % check if behavior data was collected, if so, process
 if contains(inputParams.exptCond,'fictrac','IgnoreCase',true)
+    % note: X is forward, Y is side-to-side (roll), heading is angular (yaw)
+    % set constants
+    fictracParams.dsf = 60/2; %downsample factor, roughly half fictrac rate
+    fictracParams.filtParams.sigmaPos = 400; % ms, gaussian for position
+    fictracParams.filtParams.sigmaVel = 100; % ms, gaussian for velocity
+    fictracParams.filtParams.padLen = 500; %gaussian padding, must be larger than sigma
 
-    %note:
-    %X is forward
-    %Y is side-to-side (roll)
-    %heading is angular (yaw)
+    BALL_DIAM = 9; % radius of ball, in mm
+    circum = BALL_DIAM * pi; % circumference of ball, in mm
+    fictracParams.mmPerDeg = circum / 360; % mm per degree of ball
+    fictracParams.degPerMM = 360 / circum; % deg per mm ball
 
-    fictrac_rate = 50; %set fictrac acquisition rate
-    ballRadius = 9/2; %set ball radius in mm
+    % preprocess fictrac data to extract raw position and velocity
+    fictrac = preprocessFicTrac(daqData, daqTime, settings.bob.sampRate);
 
-    % pull preprocessed fictrac data in order to processes together
-    positionVoltage = [daqData.ficTracHeading, daqData.ficTracIntX,...
-        daqData.ficTracIntY];
+    % downsample and process fictrac data
+    fictracProc = dsFiltFictrac(fictracParams, fictrac);
 
-    % 1)Tranform signal from voltage to radians for unwrapping
-    positionRad = positionVoltage*(2*pi)./10;
+    % assign output structures
+    exptData.headingPosition = fictracProc.yawAngCumPos;
+    exptData.angularVelocity = fictracProc.yawAngVel;
+    exptData.angularSpeed = fictracProc.yawAngSpd;
 
-    % 2)Unwrap
-    positionRad_uw = unwrap(positionRad);
+    exptData.forwardPosition = fictracProc.fwdCumPos;
+    exptData.forwardVelocity = fictracProc.fwdVel;
 
-    % 3)Downsample the position data to match FicTrac's output
-    positionRad_uw_ds = resample(positionRad_uw,(fictrac_rate/2),settings.bob.sampRate);
+    exptData.sidewaysPosition = fictracProc.slideCumPos;
+    exptData.sidewaysVelocity = fictracProc.slideVel;
 
-    % 4)Smooth the data
-    positionRad_uw_ds_sm = smoothdata(positionRad_uw_ds,'rlowess',25);
-
-    % 5)Transform to useful systems
-    positionUnit(:,1) = rad2deg(positionRad_uw_ds_sm(:,1)); %degrees for yaw (0-360)
-    positionUnit(:,2:3) = positionRad_uw_ds_sm(:,2:3) .* ballRadius; %mm for x/y (0-2pi*r)
-
-    % 6)Take the derivative (must be done one at a time)
-    velocity(:,1) = gradient(positionUnit(:,1)).*(fictrac_rate/2);
-    velocity(:,2) = gradient(positionUnit(:,2)).*(fictrac_rate/2);
-    velocity(:,3) = gradient(positionUnit(:,3)).*(fictrac_rate/2);
-
-    % 7)OPTIONAL: Smooth again
-    velocity_sm = smoothdata(velocity,'rlowess',15);
-
-    % 8)Resample to match DAQ
-    % add caps to avoid end resampling error
-    cap = 10;
-    velocity_sm_cap = [repmat(velocity_sm(1,:),cap,1); velocity_sm; repmat(velocity_sm(end,:),cap,1)];
-    position_sm_cap = [repmat(positionUnit(1,:),cap,1); positionUnit; repmat(positionUnit(end,:),cap,1)];
-    % resample
-    velocity_rs_cap = resample(velocity_sm_cap,settings.bob.sampRate,(50/2),3,10);
-    positionUnit_rs_cap = resample(position_sm_cap,settings.bob.sampRate,(50/2),3,10);
-    % remove caps
-    rsFactor = cap * settings.bob.sampRate/(50/2);
-    velocity_rs = velocity_rs_cap;
-    velocity_rs(1:rsFactor,:) = [];
-    velocity_rs(end-rsFactor+1:end,:) = [];
-    positionUnit_rs = positionUnit_rs_cap;
-    positionUnit_rs(1:rsFactor,:) = [];
-    positionUnit_rs(end-rsFactor+1:end,:) = [];
-
-
-    %Assign output structure
-    exptData.headingPosition = positionUnit_rs(1:ln,1); %heading position in degrees
-    exptData.angularVelocity = velocity_rs(1:ln,1); %angular velcoity in degrees/s
-
-    exptData.XPosition = positionUnit_rs(1:ln,2); %x position in mm
-    exptData.forwardVelocity = velocity_rs(1:ln,2); %forward velocity in mm/s
-
-    exptData.YPosition = positionUnit_rs(1:ln,3); %y position in mm
-    exptData.sidewaysVelocity = velocity_rs(1:ln,3); %sideways velocity in mm/s
+    exptData.totSpeed = fictracProc.totSpd;
+    exptData.tDS = fictracProc.t;
 
 end
 
-
-%% leg data
-% check if leg video was collected, if so, process
-if contains(inputParams.exptCond,'legvid','IgnoreCase',true)
-    exptData.legCamFramesIn = daqData.legCamFrames;
-    exptData.legCamFrameStartTrig = daqOutput.legCamFrameStartTrig;
-end
 end

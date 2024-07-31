@@ -254,7 +254,9 @@ elseif (strcmpi(newCell, 'n'))
         '(10) Simple closed-loop\n'...
         '(11) Simple current injection\n'...
         '(12) Motion pulse extended range\n'...
-        '(13) Motion pulse extended range w/o stim\n']);
+        '(13) Motion pulse extended range w/o stim\n'...
+        '(14) Motion pulse one speed\n'...
+        '(15) Motion pulse one speed w/o stim\n']);
     batterySelect = input('[INPUT] Select experimental battery: ');
     % then pull matching patterns and functions
     switch batterySelect
@@ -333,8 +335,20 @@ elseif (strcmpi(newCell, 'n'))
         case 13 % motion pulse extended range w/o stim
             pattSelect = ones(1,10)*2; %dark bar
             funcSelect = (129:138);
-            stimSelect = zeros(1,10); %stim for all trials
+            stimSelect = zeros(1,10); %no stim for all trials
             trialDuration = 87; %sec, time of trial
+            trialBreak = 5; %sec, break between trials
+        case 14 % motion pulse one speed
+            pattSelect = ones(1,10)*2; %dark bar
+            funcSelect = (139:148);
+            stimSelect = ones(1,10); %stim for all trials
+            trialDuration = 36; %sec, time of trial
+            trialBreak = 5; %sec, break between trials
+        case 15 % motion pulse one speed w/o stim
+            pattSelect = ones(1,10)*2; %dark bar
+            funcSelect = (139:148);
+            stimSelect = zeros(1,10); %no stim for all trials
+            trialDuration = 36; %sec, time of trial
             trialBreak = 5; %sec, break between trials
     end
 
