@@ -19,6 +19,8 @@ disp('Re-processing data...')
 cd(exptFolder)
 close all
 rawFiles = dir('*raw.mat');
+rawFiles(contains(string({rawFiles.name}), 'Acclimate')) = [];
+rawFiles(contains(string({rawFiles.name}), 'acclimate')) = [];
 
 % for each raw file
 for e = 1:length(rawFiles)

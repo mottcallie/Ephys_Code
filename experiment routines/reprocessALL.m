@@ -1,33 +1,34 @@
-% one script to re-process them all
-
+%% one script to clear them all
 % initialize
 clear
 close all
 
-% pull file names
-cd('D:\')
-expt_tracker = readtable('Battery_Tracker.xlsx','Sheet',4); %load all expts
-e = 1;
-% for each included expt, pull the full file path
-for et = 1:height(expt_tracker)
-    day = expt_tracker.Date(et);
-    fly = sprintf('fly%02d',expt_tracker.Fly(et));
-    cell = sprintf('cell%02d',expt_tracker.Cell(et));
-    include = expt_tracker.Include(et);
+%% one script to find them
+% locate all dates in this data directory
+dataFolder = 'G:\Behavior Rig\Pursuit\';
+cd(dataFolder)
+allFolders = dir('20*');
+nFolders = length(allFolders);
 
-    % load in path
-    if include
-        exptFolders{e,1} = fullfile('D:',day,fly,cell);
-        e = e+1; %update counter
+%% one script to bring them all, and in a series of for loops re-process them
+parfor f = 1:nFolders
+    disp(['PROCESSING ' num2str(f) '/' num2str(nFolders) '...'])
+    thisDate = fullfile(dataFolder,allFolders(f).name);
+    cd(thisDate)
+    allFlies = dir('fly*');
+    nFlies = length(allFlies);
+    for e = 1:nFlies
+        thisFly = fullfile(thisDate,allFlies(e).name);
+        cd(thisFly)
+        allCells = dir('cell*');
+        allCells(contains(string({allCells.name}), 'processed')) = [];
+        nCells = length(allCells);
+        for c = 1:nCells
+            thisDataset = fullfile(thisFly,allCells(c).name);
+            reprocessExpt(thisDataset)
+        end
+
     end
-end
-
-% re-process each file
-for e = 1:length(exptFolders)
-    thisFolder = exptFolders{e};
-    reprocessExpt(thisFolder{1})
     
-    disp(['Experiment ' num2str(e) ' re-processed and re-analyzed'])
 end
-
-close all
+disp('Complete!')

@@ -83,7 +83,7 @@ function [] = plotExpt(exptData,exptMeta)
             y(n) = ylabel('Object (deg)');
             
             axis tight
-            if posLim < 10
+            if posLim < 10 || isnan(posLim)
                 ylim([-10 10])
             else
                 ylim([-posLim posLim])
@@ -196,13 +196,15 @@ function [] = plotExpt(exptData,exptMeta)
 
     %% add python trigger if needed
     if checkPython
-        % find when panel xposition was jumped via python socket client
-        jump_idx = find(diff(exptData.pythonJumpTrig)>0)+1;
+        try
+            % find when panel xposition was jumped via python socket client
+            jump_idx = find(diff(exptData.pythonJumpTrig)>0)+1;
 
-        for ol=1
-            subplot(s,1,ol)
-            hold on
-            xline(exptData.t(jump_idx),'Color',"#A2142F",'LineWidth',1)
+            for ol=1
+                subplot(s,1,ol)
+                hold on
+                xline(exptData.t(jump_idx),'Color',"#A2142F",'LineWidth',1)
+            end
         end
     end
 

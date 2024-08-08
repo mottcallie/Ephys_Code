@@ -97,7 +97,7 @@ end
 %plot(tc,kernel);hold on; plot(tc,kernel_norm);xline(0)
 
 %% plot
-if 1
+if 0
     figure(10); clf;
     set(gcf,'Position',[100 100 1200 500])
     sr(1) = subplot(3,1,1:2);

@@ -101,7 +101,11 @@ end
 if contains(inputParams.exptCond,'g4','IgnoreCase',true)
 
     % convert from 0-10V AO0 output to 0-360degree mapping
-    exptData.g4displayXPos = (daqData.g4panelXPosition./10) *360;
+    if sum(contains(inputParams.aInCh,'g4panelXPosition'))
+        exptData.g4displayXPos = (daqData.g4panelXPosition./10) *360;
+    else
+        exptData.g4displayXPos = (daqData.g4display_xpos./10) *360;
+    end
 
     % if function name provided, store it
     if isfield(inputParams,'function_name')
@@ -132,7 +136,7 @@ if contains(inputParams.exptCond,'fictrac','IgnoreCase',true)
     % note: X is forward, Y is side-to-side (roll), heading is angular (yaw)
     % set constants
     fictracParams.dsf = 60/2; %downsample factor, roughly half fictrac rate
-    fictracParams.filtParams.sigmaPos = 400; % ms, gaussian for position
+    fictracParams.filtParams.sigmaPos = 200; % ms, gaussian for position
     fictracParams.filtParams.sigmaVel = 100; % ms, gaussian for velocity
     fictracParams.filtParams.padLen = 500; %gaussian padding, must be larger than sigma
 
