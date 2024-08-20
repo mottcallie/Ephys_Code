@@ -331,7 +331,7 @@ elseif (strcmpi(newCell, 'n'))
             funcSelect = (129:138);
             stimSelect = ones(1,10); %stim for all trials
             trialDuration = 87; %sec, time of trial
-            trialBreak = 5; %sec, break between trials
+            trialBreak = 5; %sec, break between tria
         case 13 % motion pulse extended range w/o stim
             pattSelect = ones(1,10)*2; %dark bar
             funcSelect = (129:138);
@@ -344,10 +344,10 @@ elseif (strcmpi(newCell, 'n'))
             stimSelect = ones(1,10); %stim for all trials
             trialDuration = 36; %sec, time of trial
             trialBreak = 5; %sec, break between trials
-        case 15 % motion pulse one speed w/o stim
-            pattSelect = ones(1,10)*2; %dark bar
-            funcSelect = (139:148);
-            stimSelect = zeros(1,10); %no stim for all trials
+        case 15 % motion pulse one speed w/ current stim
+            pattSelect = ones(1,20)*2; %dark bar
+            funcSelect = [139:148,139:148];
+            stimSelect = [zeros(1,10),ones(1,10)]; %no stim half, stim for half
             trialDuration = 36; %sec, time of trial
             trialBreak = 5; %sec, break between trials
     end
