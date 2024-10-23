@@ -1,29 +1,30 @@
-% batteryStimG4PanelsFictracEphysOpto.m
+% batteryG4PanelsFictracEphys_jumps.m
 %
-% Trial Type Function for battery and stimulating
-% Display pattern/function on G4 panels
-% Record G4 panels, FicTrac channels, and ephys channels
-% Deliver light
+% Trial Type Function for displaying patterns on G4 panels and recording 
+% data from FicTrac channels and electrophysiological (ephys) channels. 
+% This function is designed to deliver light stimuli while capturing jump 
+% data during the trial.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - min
-%   pattN - select pattern
-%   funcN - select function
-%   stim - 1 for opto output, 0 for no opto output
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the trial (in minutes).
+% - pattN     : Identifier for the pattern to be displayed on the G4 panels.
+% - funcN     : Identifier for the function to be applied during the trial.
+% - stim      : Binary flag (1 for opto output, 0 for no opto output).
 %
 % OUTPUTS:
-%   rawData - raw data measured by DAQ, matrix where each column is data
-%       from a different channel
-%   inputParams - parameters for this experiment type
-%   rawOutput - raw output sent by DAQ, matrix where each column is
-%       different channel
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Empty matrix for this trial type, included to maintain 
+%                consistency with the trial type function format.
 %
-% Adapted: 11/07/2023 - MC
-%          11/14/2023 - MC added python trigger for capturing jumps,
-%          removed empty stim output delivery
+% ADAPTED: 11/07/2023 by MC
+%          11/14/2023 by MC, added Python trigger for capturing jumps,
+%          removed empty stim output delivery.
 %
-
 function [rawData, inputParams, rawOutput] = batteryG4PanelsFictracEphys_jumps(settings,duration,pattN,funcN,stim)
 %% RESTART FICTRAC
 startFicTrac(cd,3)

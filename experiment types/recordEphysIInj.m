@@ -1,23 +1,25 @@
 % recordEphysIInj.m
 %
-% Trial Type Function 
-% Records ephys channels, performs current injection
+% Trial Type Function for recording electrophysiological (ephys) channels 
+% while performing current injections. This function captures ephys data 
+% during the trial and executes the specified current injection protocol.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - duration of trial, in seconds
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the trial (in seconds).
 %
 % OUTPUTS:
-%   rawData - raw data measured by DAQ, matrix where each column is data
-%       from a different channel
-%   inputParams - parameters for this experiment type
-%   rawOutput - raw output sent by DAQ, matrix where each column is
-%       different channel
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Matrix of raw output sent by the DAQ, where each column 
+%                corresponds to a different channel.
 %
-% Created: 7/17/20 - HHY
-% Updated: 04/02/2021 - MC
+% CREATED: 07/17/2020 by HHY
+% UPDATED: 04/02/2021 by MC
 %
-
 function [rawData, inputParams, rawOutput] = recordEphysIInj(settings, duration)
 
     % EXPERIMENT-SPECIFIC PARAMETERS

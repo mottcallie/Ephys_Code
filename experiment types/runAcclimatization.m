@@ -1,20 +1,27 @@
 % runAcclimatization.m
 %
-% Trial Type Function
-% Display and hold blank G4 pattern/function
-% Record G4 panels, FicTrac channels
+% Trial Type Function for displaying a blank G4 pattern/function and recording 
+% data from G4 panels and FicTrac channels. This function delivers a specified 
+% duration of light pulse at the start of each trial.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - sec
-%   loop - open (0) or closed (2)
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the acclimatization period (in seconds).
+% - loop      : Specifies the trial type; options are:
+%               0 - open loop, 1 - closed loop with specific settings,
+%               2 - alternative closed loop settings.
 %
 % OUTPUTS:
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Empty matrix for this trial type as there is no output data.
 %
-% CREATED: 03/22/2022 - MC
-% Updated: 09/14/2022 - MC g4 panels now through DAC instead of log
+% CREATED: 03/22/2022 by MC
+% UPDATED: 09/14/2022 by MC, G4 panels now controlled through DAC instead of log.
 %
-
 function [rawData, inputParams, rawOutput] = runAcclimatization(settings,duration,loop)
 
 %% INITIALIZE DAQ

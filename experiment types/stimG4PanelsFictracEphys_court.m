@@ -1,24 +1,25 @@
-% stimG4PanelsFictracEphys_func.m
+% stimG4PanelsFictracEphys_court.m
 %
-% Trial Type Function for stimulating
-% Display pattern/function on G4 panels
-% Record G4 panels, FicTrac channels, and ephys channels
-% Deliver 3 second light pulse at the start of each trial
+% Trial Type Function for stimulating G4 panels and recording data from
+% FicTrac channels and electrophysiological (ephys) channels. This function
+% delivers a 5-second light pulse at the start of each trial while displaying 
+% specified patterns on the G4 panels.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - min
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the trial (in minutes).
 %
 % OUTPUTS:
-%   rawData - raw data measured by DAQ, matrix where each column is data
-%       from a different channel
-%   inputParams - parameters for this experiment type
-%   rawOutput - raw output sent by DAQ, matrix where each column is
-%       different channel
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Matrix of raw output sent by the DAQ, where each column 
+%                corresponds to a different channel.
 %
-% Adapted: 10/06/2022 - MC
+% Adapted: 10/06/2022 by MC
 %
-
 function [rawData, inputParams, rawOutput] = stimG4PanelsFictracEphys_court(settings,duration)
 
 %% INITIALIZE DAQ

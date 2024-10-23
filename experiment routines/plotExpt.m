@@ -1,20 +1,20 @@
-% plotEphysFicTrac.m
+% plotExpt.m
 %
 % Function that generates a simple summary plot containing all relevant
-% data acquired during a given trial. For ephys only, plots only ephys. For
-% fictrac and ephys, plots both behavior and ephys, etc.
+% data acquired during a given trial. For electrophysiology (ephys) only, 
+% plots only ephys data. For fictrac and ephys, plots both behavior and 
+% ephys data.
 %
 % INPUTS:
-%   exptData - processed data, can contain ephys, fictrac, and/or output
-%   exptMeta - processed ephys meta
-%
+%   exptData - processed data, can contain ephys, fictrac, and/or output.
+%   exptMeta - processed electrophysiology metadata.
 %
 % OUTPUTS:
 %
 % Original: 04/05/2021 - MC
-%           11/04/2021 - MC removed g3 and added g4
-%           02/06/2023 - MC small modifications to display and output plots
-
+%           11/04/2021 - MC removed g3 and added g4.
+%           02/06/2023 - MC made small modifications to display and output plots.
+%
 function [] = plotExpt(exptData,exptMeta)
     
     % reset counters

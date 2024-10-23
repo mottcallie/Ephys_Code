@@ -1,14 +1,14 @@
-% reprocessExpt
-% Function that pulls all raw files from a given experiment and
-% re-processes them. To be used if for whatever reason one needs to change
-% the post-experiment routine and apply changes across multiple files.
+% reprocessExpt.m
 %
-% INPUTS
-% exptfolder - location of raw data files
+% Function that retrieves all raw data files from a specified experiment 
+% folder and re-processes them. This function is useful for applying 
+% changes to the post-experiment routine across multiple files when needed.
 %
-% ORIGINAL  11/11/2021 MC
+% INPUTS:
+% - exptFolder : Location of the raw data files to be reprocessed.
 %
-
+% ORIGINAL: 11/11/2021 by MC
+%
 function reprocessExpt(exptFolder)
 
 % load ephys settings

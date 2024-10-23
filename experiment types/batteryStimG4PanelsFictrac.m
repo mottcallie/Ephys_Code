@@ -1,27 +1,27 @@
 % batteryStimG4PanelsFictrac.m
 %
-% Trial Type Function for battery and stimulating
-% Display pattern/function on G4 panels
-% Record G4 panels and FicTrac channels
-% Deliver light
+% Trial Type Function for displaying patterns on G4 panels and recording 
+% data from FicTrac channels and electrophysiological (ephys) channels. 
+% This function delivers light stimuli during the trial.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - min
-%   pattN - select pattern
-%   funcN - select function
-%   stim - 1 for opto output, 0 for no opto output
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the trial (in minutes).
+% - pattN     : Identifier for the pattern to be displayed on the G4 panels.
+% - funcN     : Identifier for the function to be applied during the trial.
+% - stim      : Binary flag (1 for opto output, 0 for no opto output).
 %
 % OUTPUTS:
-%   rawData - raw data measured by DAQ, matrix where each column is data
-%       from a different channel
-%   inputParams - parameters for this experiment type
-%   rawOutput - raw output sent by DAQ, matrix where each column is
-%       different channel
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Matrix of raw output sent by the DAQ, where each column 
+%                corresponds to a different channel.
 %
-% Adapted: 01/23/2023 - MC
+% ADAPTED: 01/23/2023 by MC
 %
-
 function [rawData, inputParams, rawOutput] = batteryStimG4PanelsFictrac(settings,duration,pattN,funcN,stim)
 
 %% INITIALIZE DAQ

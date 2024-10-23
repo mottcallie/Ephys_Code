@@ -1,22 +1,20 @@
 % postExptRoutine.m
 %
-% Function that (1) calls fx to preprocess raw DAQ data into useable
-%  variables, (2) calls fx to process each ephys and behavior variables to
-%  ensure that each has been properly converted/scaled, and (3) calls fx to
-%  plot data based on the experiment conducted.
+% Function that (1) calls a function to preprocess raw DAQ data into usable
+% variables, (2) calls a function to process each electrophysiology (ephys) 
+% and behavior variable to ensure that each has been properly converted/scaled, 
+% and (3) calls a function to plot data based on the conducted experiment.
 %
 % INPUTS:
-%   inputParams - input parameters from trial function (e.g. ephysRecording)
-%   rawData - raw signal input from DAQ during experiment
-%   rawOutput - raw signal output to DAQ (current inject) during experiment 
-%   settings - settings struct from ephysSettings
+%   inputParams - input parameters from trial function (e.g. ephysRecording).
+%   rawData - raw signal input from DAQ during the experiment.
+%   rawOutput - raw signal output to DAQ (current injection) during the experiment.
+%   settings - settings struct from ephysSettings.
 %
 % Original: 04/02/2021 - MC
-% Updated:  11/12/2021 - MC added pro to filename for easier calling
-%           07/31/2025 - MC moved firing rate convolution to processExptData
+% Updated:  11/12/2021 - MC added 'pro' to filename for easier calling.
+%           07/31/2025 - MC moved firing rate convolution to processExptData.
 %
-
-
 function [exptData] = postExptRoutine(inputParams, rawData, rawOutput, settings)
     %% initialize
     % setup directories

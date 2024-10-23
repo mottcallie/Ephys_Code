@@ -1,16 +1,15 @@
 % plotFigure.m
 %
 % Function that generates a simple summary plot containing all relevant
-% data acquired during a given trial. IMPORTANT: subtracts gap junction
-% potential from all ephys data. Saves plot as high resolution .svg for
-% generating corresponding figures.
+% data acquired during a given trial. IMPORTANT: subtracts liquid junction
+% potential from all electrophysiology (ephys) data. Saves plot as high 
+% resolution .svg for generating corresponding figures.
 %
 % INPUTS:
-%   filename - processed data file to be plotted for figure
+%   filename - processed data file to be plotted for figure.
 %
-% Original: 01/02/2024 - MC adapted from plotExpt
+% Original: 01/02/2024 - MC adapted from plotExpt.
 %
-
 function [] = plotFigure(filename)
 %% initialize
 % pull current folder

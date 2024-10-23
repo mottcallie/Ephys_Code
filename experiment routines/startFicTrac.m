@@ -1,21 +1,26 @@
-% startFicTrac
+% startFicTrac.m
 %
-% function for starting fictrac configuration, if not already configured,
-% and launching fictrac/python, if not already running
+% Function for starting the FicTrac configuration and launching the 
+% FicTrac system (and optionally Python scripts) for data acquisition 
+% during experiments. This function checks if FicTrac is already 
+% configured and, if not, sets it up using the appropriate configuration 
+% files.
 %
-% INPUTS
-% cellDirPath - load in cell path to export config image
-% ftMode -  0 set to open-loop
-%           1 set to closed-loop via frame rate
-%           2 set to closed-loop via frame index
-%           3 set to clsoed-loop via frame index WITH bar jumps
-%           4 set to closed-loop via frame index WITH noise
-%           5 set to leg camera
+% INPUTS:
+% - cellDirPath : Path to the directory where the configuration image 
+%                 should be exported.
+% - ftMode      : Specifies the mode for FicTrac operation:
+%                 0 - Open-loop,
+%                 1 - Closed-loop via frame rate,
+%                 2 - Closed-loop via frame index,
+%                 3 - Closed-loop via frame index with bar jumps,
+%                 4 - Closed-loop via frame index with noise,
+%                 5 - Leg camera mode.
 %
-% Created: 11/05/2021 MC
-% Updated: 04/20/2022 MC added open/closed loop alternatives
-% Updated: 10/30/2023 MC added leg camera option
-
+% CREATED: 11/05/2021 by MC
+% UPDATED: 04/20/2022 by MC, added open/closed loop alternatives.
+% UPDATED: 10/30/2023 by MC, added leg camera option.
+%
 function startFicTrac(cellDirPath,ftMode)
 %% configure fictrac
 % set config file to be used

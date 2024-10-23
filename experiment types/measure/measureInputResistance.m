@@ -1,14 +1,19 @@
 % measureInputResistance.m
 %
-% Function that measures input resistance between trials
+% Function that measures input resistance between trials by applying 
+% a current step and recording the resulting voltage change.
 %
 % INPUT:
-%   settings - struct of ephys setup settings, from ephysSettings()
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
 %
+% OUTPUT:
+% - inputResistance : Calculated input resistance (in MOhms) based on the 
+%                     change in voltage and current during the current 
+%                     injection protocol.
 %
-% Original: 04/06/2021 - MC 
+% ORIGINAL: 04/06/2021 by MC
 %
-
 function inputResistance = measureInputResistance(settings)
     
     %% Measure input resistance    

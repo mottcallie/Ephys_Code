@@ -1,33 +1,33 @@
 % processExptData.m
 %
 % Function to take output from preprocessUserDaq.m and extract
-% appropriately scaled and named data ephys(voltage, current,
-% scaled out, gain, mode, freq) and g4 display panels (x position)
-% and fictrac (x position, y position, heading) and output data (opto or
-% current stim)
+% appropriately scaled and named data including electrophysiology (ephys) 
+% data (voltage, current, scaled output, gain, mode, frequency) and 
+% data from g4 display panels (x position) and fictrac (x position, 
+% y position, heading), as well as output data (opto or current stimulation).
 %
 % INPUTS:
-%   daqData - data collected on DAQ, with fields labeled
-%   daqOutput - signal output on DAQ during experiment, with fields labeled
-%   daqTime - timing vector for daqData and daqOutput
-%   inputParams - input parameters from trial function (e.g. ephysRecording)
-%   settings - settings struct from ephysSettings
+%   daqData - data collected on DAQ, with fields labeled appropriately.
+%   daqOutput - signal output on DAQ during the experiment, with fields labeled.
+%   daqTime - timing vector for daqData and daqOutput.
+%   inputParams - input parameters from trial function (e.g. ephysRecording).
+%   settings - settings struct from ephysSettings.
 %
 % OUTPUTS:
-%   exptData - struct of appropriately scaled ephys and/or behavior data
-%   ephysMeta - struct of ephys metadatam from decoding telegraphed output,
-%       trial parameters
+%   exptData - struct containing appropriately scaled electrophysiology and/or 
+%              behavior data.
+%   exptMeta - struct of electrophysiology metadata derived from decoding 
+%              telegraphed output and trial parameters.
 %
 % Created:  04/03/2021 - MC
-%           11/04/2021 - MC removed g3, updated to g4 display
-%           11/10/2021 - MC fixed ball width
-%           11/15/2021 - MC rotated t, resampled fictrac to match DAQ
-%           01/04/2022 - MC fixed resampling error w/fictrac data
-%           09/14/2022 - MC g4 data now run through DAC rather than log
-%           04/28/2023 - MC exptMeta now stores object size
-%           07/31/2024 - MC fictrac now based on Helen's, added firing rate
+%           11/04/2021 - MC removed g3, updated to g4 display.
+%           11/10/2021 - MC fixed ball width.
+%           11/15/2021 - MC rotated time, resampled fictrac to match DAQ.
+%           01/04/2022 - MC fixed resampling error with fictrac data.
+%           09/14/2022 - MC g4 data now processed through DAC rather than logged.
+%           04/28/2023 - MC exptMeta now stores object size.
+%           07/31/2024 - MC fictrac now based on Helen's implementation, added firing rate.
 %
-
 function [exptData, exptMeta] = processExptData(daqData, daqOutput, daqTime, inputParams, settings)
 
 %% meta data

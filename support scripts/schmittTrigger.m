@@ -1,16 +1,19 @@
 % schmittTrigger
-% implements a shmitt trigger and pulls indices accordingly. once x exceeds
-% high threshold, trigger will remain active until x falls below low
-% threshold
+% implements a Schmitt trigger and pulls indices accordingly. Once x exceeds
+% the high threshold, the trigger will remain active until x falls below the low
+% threshold.
 %
-% INPUT
-% xdata - dataset to apply trigger against
-% highT - high threshold to cross in order to be active
-% lowT - low threshold to cross in order to be inactive
+% INPUTS:
+% - xdata : Dataset to apply the trigger against (2D array).
+% - highT : High threshold to cross in order to activate the trigger.
+% - lowT  : Low threshold to cross in order to deactivate the trigger.
 %
-% 08/05/2022 MC - created
+% OUTPUT:
+% - triggerIdx : Binary matrix indicating the state of the trigger (1 = active, 
+%                 0 = inactive) for each element in the dataset.
 %
-
+% CREATED: 08/05/2022 by MC
+%
 function triggerIdx = schmittTrigger(xdata,highT,lowT)
 % initialize
 [x,n] = size(xdata);

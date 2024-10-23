@@ -1,26 +1,40 @@
 % convolveSpikeRate_input.m
 %
-% Analysis function
-% Detects spikes and then applies a convolution kernel to calculate the
-% spike rate
+% Analysis function that detects spikes in voltage data and applies a convolution 
+% kernel to calculate the spike rate.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   exptData - processed experiment data
-%   celltype - typically 4000 but can adjust for lower/higher res
-%   ktype - gaussian or causal
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - exptData  : Struct containing processed experiment data, including scaled 
+%               voltage and time arrays.
+% - celltype  : Specifies the cell type, typically 'AOTU019' or similar, 
+%               which can affect spike detection parameters.
+% - ktype     : Type of convolution kernel to use, either 'gaussian' or 
+%               'causal'.
 %
 % OUTPUTS:
-%   pk_v - voltage of spike peaks
-%   pk_r - raster of spikes
-%   spikeRate - convolved spike rate
+% - pk_v      : Array of voltage values at detected spike peaks.
+% - pk_r      : Binary raster array indicating spike occurrences (1 = spike, 
+%               0 = no spike).
+% - spikeRate : Array of the convolved spike rate, representing the frequency 
+%               of spikes over time.
 %
-% CREATED:  05/17/2023 MC created from main convolve function
-% UPDATED:  05/29/2024 MC normalized area to 1
-%           06/03/2024 MC fixed causal kernel
-%           07/30/2024 MC made cell type specific, moved ksize to within function
+% PROCESS:
+% The function begins by setting kernel parameters and fetching the relevant 
+% data and sampling rate. It then establishes peak detection parameters based 
+% on the specified cell type to optimize spike detection. After detecting 
+% spikes, it creates a raster of spike occurrences and convolves this with 
+% the specified kernel type to calculate the spike rate.
 %
-
+% The resulting spike rate is a smoothed representation of spike frequency 
+% over time, which is useful for analyzing neuronal firing patterns.
+%
+% CREATED:  05/17/2023 by MC, created from main convolve function
+% UPDATED:  05/29/2024 by MC, normalized area to 1
+%           06/03/2024 by MC, fixed causal kernel
+%           07/30/2024 by MC, made cell type specific, moved ksize to within function
+%
 function  [pk_v,pk_r,spikeRate] = convolveSpikeRate_input(settings,exptData,celltype,ktype)
 %% set parameters
 % set kernel size

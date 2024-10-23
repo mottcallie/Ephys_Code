@@ -22,7 +22,6 @@
 % UPDATED: 8/28/19 - HHY
 %   10/4/21 - HHY - matlab code for smoothing, not python
 %
-
 function [smoPos, smoVel] = computeSmoothedVelocity(pos, padLen, ...
     sigmaPos, sigmaVel, sampRate)
    

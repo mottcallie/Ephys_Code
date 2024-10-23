@@ -1,27 +1,25 @@
-% batteryStimG4PanelsFictracEphysOpto.m
+% recordFictracEphysIInj.m
 %
-% Trial Type Function for battery and stimulating
-% Display pattern/function on G4 panels
-% Record G4 panels, FicTrac channels, and ephys channels
-% AND trigger/record leg camera frames
+% Trial Type Function for recording electrophysiological (ephys) channels 
+% while performing current injections. This function captures data from 
+% both the FicTrac system and ephys channels, and triggers leg camera frames 
+% during the trial.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - min
-%   pattN - select pattern
-%   funcN - select function
-%   stim - ignored
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the trial (in seconds).
 %
 % OUTPUTS:
-%   rawData - raw data measured by DAQ, matrix where each column is data
-%       from a different channel
-%   inputParams - parameters for this experiment type
-%   rawOutput - raw output sent by DAQ, matrix where each column is
-%       different channel
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Matrix of raw output sent by the DAQ, where each column 
+%                corresponds to a different channel.
 %
-% Adapted: 10/30/2023 - MC
+% ADAPTED: 10/30/2023 by MC
 %
-
 function [rawData, inputParams, rawOutput] = batteryStimG4PanelsFictracEphys_legtracker(settings,duration,pattN,funcN,stim)
 
 %% INITIALIZE DAQ

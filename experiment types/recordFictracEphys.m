@@ -1,24 +1,25 @@
 % recordFictracEphys.m
 %
-% Trial Type Function 
-% Records both FicTrac channels and ephys channels, WITHOUT current injection
+% Trial Type Function for recording both FicTrac channels and 
+% electrophysiological (ephys) channels without delivering current injections. 
+% This function captures the motion data and ephys readings during the trial.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - duration of trial, in seconds
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the trial (in seconds).
 %
 % OUTPUTS:
-%   rawData - raw data measured by DAQ, matrix where each column is data
-%       from a different channel
-%   inputParams - parameters for this experiment type
-%   rawOutput - raw output sent by DAQ, matrix where each column is
-%       different channel (this is here because trial type functions follow
-%       this format, but there is no rawOutput for this type)
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Empty matrix for this trial type, included to maintain 
+%                consistency with the trial type function format.
 %
-% Original: 01/30/2021 - HY
-% Updated: 04/01/2021 - MC
+% ORIGINAL: 01/30/2021 by HY
+% UPDATED: 04/01/2021 by MC
 %
-
 function [rawData, inputParams, rawOutput] = recordFictracEphys(settings, ...
     duration)
 

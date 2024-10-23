@@ -1,23 +1,38 @@
 % convolveSpikeRate.m
 %
-% Analysis function
-% Detects spikes and then applies a convolution kernel to calculate the
-% spike rate
+% Analysis function that detects spikes in voltage or current traces and 
+% applies a convolution kernel to calculate the spike rate.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   exptData - processed experiment data
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - exptData  : Struct containing processed experiment data, which includes 
+%               scaled voltage or current traces and corresponding time data.
+% - ktype     : Type of convolution kernel to use, either 'gaussian' or 
+%               'causal'.
 %
 % OUTPUTS:
-%   pk_v - voltage of spike peaks
-%   pk_r - raster of spikes
-%   spikeRate - convolved spike rate
+% - pk_v      : Array of voltage or current values at detected spike peaks.
+% - pk_r      : Binary raster array indicating spike occurrences (1 = spike, 
+%               0 = no spike).
+% - spikeRate : Array of the convolved spike rate, representing the frequency 
+%               of spikes over time.
 %
-% CREATED:  12/14/2021 MC
-% UPDATED:  05/29/2024 MC normalized area to 1
-%           06/03/2024 MC fixed causal kernel
+% PROCESS:
+% The function pulls the time and sample rate from the experimental data, 
+% determining whether to process voltage or current traces based on the 
+% available fields. It sets parameters for peak detection tailored to the 
+% specific recording conditions. After detecting spikes, it creates a raster 
+% of spike occurrences and convolves this with the specified kernel type to 
+% calculate the spike rate.
 %
-
+% The resulting spike rate provides insight into the neuron's firing patterns 
+% and how it responds to stimuli.
+%
+% CREATED:  12/14/2021 by MC
+% UPDATED:  05/29/2024 by MC, normalized area to 1
+%           06/03/2024 by MC, fixed causal kernel
+%
 function  [pk_v,pk_r,spikeRate] = convolveSpikeRate(settings,exptData,ktype)
 
 %% pull trace and time

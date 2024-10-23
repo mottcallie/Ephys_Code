@@ -5,7 +5,7 @@ close all
 
 %% one script to find them
 % locate all dates in this data directory
-dataFolder = 'G:\Behavior Rig\Pursuit\';
+dataFolder = 'G:\Behavior Rig\Gain\';
 cd(dataFolder)
 allFolders = dir('20*');
 nFolders = length(allFolders);

@@ -1,24 +1,25 @@
-% recordG4PanelsFictracEphys_func.m
+% recordG4PanelsFictracEphys_court.m
 %
-% Trial Type Function
-% Display pattern/function on G4 panels
-% Record G4 panels, FicTrac channels, and ephys channels
+% Trial Type Function for displaying patterns on G4 panels and recording 
+% data from FicTrac channels and electrophysiological (ephys) channels. 
+% This function conducts optomotor trials by displaying a specified pattern 
+% and recording the corresponding data.
 %
 % INPUTS:
-%   settings - struct of ephys setup settings, from ephysSettings()
-%   duration - min
+% - settings  : Struct containing electrophysiological setup settings, 
+%               typically obtained from the ephysSettings() function.
+% - duration  : Duration of the trial (in minutes).
 %
 % OUTPUTS:
-%   rawData - raw data measured by DAQ, matrix where each column is data
-%       from a different channel
-%   inputParams - parameters for this experiment type
-%   rawOutput - raw output sent by DAQ, matrix where each column is
-%       different channel
+% - rawData   : Matrix of raw data measured by the DAQ, where each column 
+%               corresponds to data from a different channel.
+% - inputParams : Struct containing parameters specific to this experiment 
+%                 type, including experimental conditions and channel settings.
+% - rawOutput  : Empty matrix for this trial type as there is no output data.
 %
-% Created: 11/01/2021 - MC
-% Updated: 09/14/2022 - MC g4 panels now through DAC instead of log
+% CREATED: 11/01/2021 by MC
+% UPDATED: 09/14/2022 by MC, G4 panels now controlled through DAC instead of log.
 %
-
 function [rawData, inputParams, rawOutput] = recordG4PanelsFictracEphys_court(settings,duration)
 
 %% INITIALIZE DAQ
